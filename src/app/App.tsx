@@ -1,9 +1,14 @@
+import { Opening } from '../features/world/Opening';
 export function App() {
   return (
     <main>
-      <h1>Interactive Portfolio</h1>
-      <p>This portfolio is in development.</p>
-      <p>Projects, About, and Contact will be added in upcoming steps.</p>
+      <header>
+        <span>Between Frames</span>
+        <span>Opening study / 01</span>
+      </header>
+      <h1 className="sr-only">Interactive Portfolio</h1>
+      <Opening />
+      <footer>This portfolio is in development.</footer>
     </main>
   );
 }
