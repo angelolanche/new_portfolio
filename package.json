@@ -35,10 +35,15 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings 0",
+    "lint:ai": "node scripts/ai-validate.mjs lint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "typecheck:ai": "node scripts/ai-validate.mjs typecheck",
+    "test": "vitest run --reporter=dot --silent=passed-only",
+    "test:ai": "node scripts/ai-validate.mjs test",
     "test:watch": "vitest",
     "build": "npm run typecheck && vite build",
+    "build:ai": "node scripts/ai-validate.mjs build",
+    "validate:ai": "node scripts/ai-validate.mjs validate",
     "preview": "vite preview"
   }
 }
