@@ -1,0 +1,99 @@
+.dither-controls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 3;
+  width: min(17rem, calc(100% - 2rem));
+  max-height: calc(100% - 6rem);
+  overflow: auto;
+  box-sizing: border-box;
+  color: #eee5d3;
+  background: rgb(23 28 28 / 95%);
+  border: 1px solid #857c66;
+  border-radius: 6px;
+  font:
+    0.8rem/1.45 system-ui,
+    sans-serif;
+  overscroll-behavior: contain;
+}
+.dither-controls summary {
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+.dither-controls-body {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0 1rem 1rem;
+}
+.dither-controls p {
+  margin: 0 0 0.35rem;
+  color: #bcb9ac;
+  font-size: 0.72rem;
+}
+.dither-controls label {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: center;
+}
+.dither-controls label span {
+  color: #e4bf80;
+  font-variant-numeric: tabular-nums;
+}
+.dither-controls input[type='range'] {
+  width: 100%;
+  margin: 0 0 0.3rem;
+  min-height: 24px;
+  accent-color: #e4bf80;
+}
+.dither-controls select,
+.dither-controls button {
+  color: inherit;
+  background: #292e2b;
+  border: 1px solid #857c66;
+  padding: 0.5rem;
+  border-radius: 3px;
+  font: inherit;
+  min-height: 36px;
+}
+.dither-controls :focus-visible {
+  outline: 2px solid #e4bf80;
+  outline-offset: 3px;
+}
+.dither-controls button {
+  cursor: pointer;
+}
+.dither-colors {
+  display: grid;
+  gap: 0.5rem;
+}
+.dither-advanced {
+  border-top: 1px solid #575a4d;
+}
+.dither-advanced summary {
+  padding: 0.6rem 0;
+}
+.dither-adjustments {
+  display: grid;
+  gap: 0.55rem;
+}
+.dither-controls input:disabled {
+  opacity: 0.35;
+}
+.dither-colors input {
+  width: 3rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+@media (max-width: 600px) {
+  .dither-controls {
+    top: 0.5rem;
+    right: 0.5rem;
+    width: min(15rem, calc(100% - 1rem));
+    max-height: calc(100% - 5rem);
+  }
+}
