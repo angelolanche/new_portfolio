@@ -4,3 +4,23 @@ coverage/
 *.local
 outputs/
 work/
+.logs/
+
+# Local environment and generated diagnostics
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.log
+*.tsbuildinfo
+
+# Machine-specific editor and OS files
+/.vscode/*
+!/.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Accidental local shell artifact
+/([{]dom
