@@ -7,7 +7,7 @@ export function App() {
         <span>Opening study / 01</span>
       </header>
       <h1 className="sr-only">Interactive Portfolio</h1>
-      <Opening />
+      <Opening colorDither />
       <footer>This portfolio is in development.</footer>
     </main>
   );
