@@ -1,12 +1,15 @@
 import { Box3, Matrix4, PerspectiveCamera, Ray, Vector3 } from 'three';
 import { describe, expect, it } from 'vitest';
-import { sampleOpening, openingDuration } from './cameraPath';
+import { sampleOpening } from './cameraPath';
+import { impactTime } from './cup-spill/spillMotion';
 import {
   roomBounds,
+  roomCeiling,
   entryDoorPosition,
   entryDoorScale,
   sideWindowPosition,
   sideWindowScale,
+  windowWallSections,
   sofaPosition,
   wallUnitUpperPanels,
   wovenChairPosition,
@@ -27,6 +30,59 @@ const chairBounds = new Box3(
   new Vector3(-0.62, 0, -0.5),
   new Vector3(0.62, 1.325, 0.5),
 );
+
+it('blocks exterior stars above the room and both camera starting positions with a solid ceiling', () => {
+  const roof = new Box3().setFromCenterAndSize(
+    new Vector3(...roomCeiling.position),
+    new Vector3(...roomCeiling.size),
+  );
+  expect(roof.min.y).toBeCloseTo(roomBounds.height);
+  for (const aspect of [16 / 9, 9 / 16]) {
+    const pose = sampleOpening(0, aspect);
+    const ray = new Ray(pose.position, new Vector3(0, 1, 0));
+    expect(ray.intersectsBox(roof)).toBe(true);
+  }
+  for (const x of [roomBounds.left, roomBounds.right]) {
+    for (const z of [roomBounds.back, roomBounds.front]) {
+      expect(
+        new Ray(new Vector3(x, 1, z), new Vector3(0, 1, 0)).intersectsBox(roof),
+      ).toBe(true);
+    }
+  }
+});
+
+it('leaves the window and entry open to exterior geometry while keeping the surrounding wall solid', () => {
+  const boxes = windowWallSections.map(({ position, size }) =>
+    new Box3().setFromCenterAndSize(
+      new Vector3(...position),
+      new Vector3(...size),
+    ),
+  );
+  const halfWidth = (1.57 * sideWindowScale[0]) / 2;
+  const halfHeight = (1.72 * sideWindowScale[1]) / 2;
+  for (let y = 0.05; y < roomBounds.height; y += 0.1) {
+    for (let z = roomBounds.back + 0.05; z < roomBounds.front; z += 0.1) {
+      const insideWindow =
+        Math.abs(y - sideWindowPosition[1]) < halfHeight &&
+        Math.abs(z - sideWindowPosition[2]) < halfWidth;
+      const insideDoor =
+        y < 2.2 * entryDoorScale[1] &&
+        Math.abs(z - entryDoorPosition[2]) < 0.45 * entryDoorScale[0];
+      const insideOpening = insideWindow || insideDoor;
+      const ray = new Ray(new Vector3(0, y, z), new Vector3(-1, 0, 0));
+      expect(boxes.some((box) => ray.intersectsBox(box))).toBe(!insideOpening);
+    }
+  }
+  const actualArea = windowWallSections.reduce(
+    (sum, section) => sum + section.size[1] * section.size[2],
+    0,
+  );
+  expect(actualArea).toBeCloseTo(
+    roomBounds.height * (roomBounds.front - roomBounds.back) -
+      4 * halfWidth * halfHeight -
+      0.9 * entryDoorScale[0] * 2.2 * entryDoorScale[1],
+  );
+});
 
 it('moves only the door another twenty percent of its width from the window, beyond the current frame', () => {
   const projectDoor = (time: number, y: number, zOffset: number) => {
@@ -65,8 +121,7 @@ it('moves only the door another twenty percent of its width from the window, bey
   for (const y of [0, 2.315])
     for (const z of [-0.525, 0.525]) {
       expect(projectDoor(0, y, z).x).toBeLessThan(-1);
-      expect(projectDoor(openingDuration * 0.6, y, z).x).toBeLessThan(-1);
-      expect(projectDoor(openingDuration, y, z).x).toBeLessThan(-1);
+      expect(projectDoor(impactTime, y, z).x).toBeLessThan(-1);
     }
 });
 
@@ -105,10 +160,7 @@ it('keeps the tall wall unit clear of the TV and antenna sightlines', () => {
   );
   for (const aspect of [16 / 9, 4 / 3, 390 / 730])
     for (let step = 0; step <= 20; step++) {
-      const origin = sampleOpening(
-        (step * openingDuration) / 20,
-        aspect,
-      ).position;
+      const origin = sampleOpening((step * impactTime) / 20, aspect).position;
       for (const target of targets) {
         const ray = new Ray(origin, target.clone().sub(origin).normalize());
         for (const panel of panels) {
@@ -145,7 +197,7 @@ describe('armchair placement', () => {
     (aspect) => {
       for (let step = 0; step <= 20; step++) {
         const origin = sampleOpening(
-          (step * openingDuration) / 20,
+          (step * impactTime) / 20,
           aspect,
         ).position.applyMatrix4(worldToChair);
         for (const x of [-0.625, 0, 0.625])
@@ -200,7 +252,7 @@ describe('woven chair placement', () => {
     for (const aspect of [16 / 9, 390 / 730])
       for (let step = 0; step <= 20; step++) {
         const origin = sampleOpening(
-          (step * openingDuration) / 20,
+          (step * impactTime) / 20,
           aspect,
         ).position.applyMatrix4(inverse);
         for (const target of targets) {
