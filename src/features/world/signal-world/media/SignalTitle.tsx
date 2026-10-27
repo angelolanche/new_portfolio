@@ -3,6 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { SRGBColorSpace, TextureLoader, VideoTexture } from 'three';
 import { createPlaqueMaterial } from '../plaques/plaqueMaterial';
 import { createTitlePlayback } from './signalTitlePlayback';
+import { SignalInstructions } from './SignalInstructions';
 import { takePreparedVideo, trackSceneAsset } from '../../opening/scenePreload';
 import type { SignalNavigation } from '../navigation/signalNavigation';
 import {
@@ -18,10 +19,12 @@ export function SignalTitle({
   playing,
   navigationRef,
   clockRef,
+  floatClockRef,
 }: {
   playing: boolean;
   navigationRef: RefObject<SignalNavigation>;
   clockRef: RefObject<{ time: number }>;
+  floatClockRef: RefObject<number>;
 }) {
   const aspect = useThree(({ size }) => size.width / size.height);
   const face = useMemo(() => createPlaqueMaterial(null, true), []);
@@ -108,6 +111,7 @@ export function SignalTitle({
       <mesh position={[0, 0, 0.001]} material={face.material}>
         <planeGeometry args={[titleWidth, titleHeight]} />
       </mesh>
+      <SignalInstructions clockRef={floatClockRef} />
     </group>
   );
 }

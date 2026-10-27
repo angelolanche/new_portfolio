@@ -10,7 +10,6 @@ import { openingDuration } from './timing';
 import {
   clampProgress,
   clearFlightKeys,
-  createFlight,
   isSignalTravelling,
   nextWorkProgress,
   setFlightKey,
@@ -28,8 +27,7 @@ type Options = {
   indexDialog: RefObject<HTMLDialogElement | null>;
   entered: boolean;
   blocked: boolean;
-  onReplay: () => void;
-  onTogglePlayback: () => void;
+  onOpenWork: () => void;
 };
 
 export function useOpeningControls({
@@ -40,8 +38,7 @@ export function useOpeningControls({
   indexDialog,
   entered,
   blocked,
-  onReplay,
-  onTogglePlayback,
+  onOpenWork,
 }: Options) {
   const lastWheelRef = useRef(-Infinity);
   const completedWheelTravelRef = useRef<SignalNavigation['travel']>(undefined);
@@ -117,26 +114,13 @@ export function useOpeningControls({
     },
     onKeyDown: (event) => {
       if (blocked || event.target !== event.currentTarget) return;
-      if (event.code === 'Space') {
-        event.preventDefault();
-        onTogglePlayback();
-        return;
-      }
-      if (event.key.toLowerCase() === 'r') {
-        event.preventDefault();
-        navigationRef.current.progress = 0;
-        navigationRef.current.mode = 'scroll';
-        navigationRef.current.target = 0;
-        navigationRef.current.travel = undefined;
-        navigationRef.current.lookKeys = {};
-        lastWheelRef.current = -Infinity;
-        navigationRef.current.flight = createFlight();
-        pointerRef.current = { x: 0, y: 0 };
-        resetPointer();
-        onReplay();
-        return;
-      }
       if (!entered) return;
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        if (!event.repeat && !isSignalTravelling(navigationRef.current))
+          onOpenWork();
+        return;
+      }
       if (event.key.startsWith('Arrow')) {
         event.preventDefault();
         if (

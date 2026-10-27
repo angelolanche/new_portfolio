@@ -2,7 +2,7 @@
 
 Start with `GlassSpill.tsx`: it advances the shared simulation, updates the cup pose, then updates each water effect. The scene mounts it inside the moving table in `../room/AnimatedTable.tsx`. That parent applies the table jolt to every object together.
 
-The physics from the owner export, `cup-spill-settings (2).json` (2026-10-21), remains in `spillSettings.ts`. The owner requested simpler water graphics and removal of detached visual droplets on 2026-10-27. The tuning GUI stays removed. Play/Pause and Replay remain available.
+The physics from the owner export, `cup-spill-settings (2).json` (2026-10-21), remains in `spillSettings.ts`. The owner requested simpler water graphics and removal of detached visual droplets on 2026-10-27. The tuning GUI stays removed. Manual pause and Replay have been removed.
 
 ## Where to edit
 
@@ -36,14 +36,14 @@ Distances use meters, time uses seconds, angles use radians, volumes use cubic m
 
 The reference-driven release has two phases: a brief outward splash around tipping, followed by a more cohesive main flow. `waterRelease.ts` shares the transient impulse between discharge, trajectories and meshes. Detached tips are no longer rendered.
 
-The simulation advances in fixed 1/120-second steps. Rendering reads the simulation state without advancing a separate clock, preserving pause and replay behavior. Seeking backwards resets and replays the simulation. The elapsed time comes from the existing opening controls, including reduced-motion handling. Replay returns to the beginning of the approved approach.
+The simulation advances in fixed 1/120-second steps. Rendering reads the simulation state without advancing a separate clock. The simulation advances only forward; no restart state or backwards-seek reset remains. The elapsed time comes from the existing opening controls, including reduced-motion handling.
 
 The liquid inside the cup is clipped by a gravity-oriented plane: it does not rotate like a solid cylinder. On the table, each grid cell stores a shallow water depth. Neighboring cells exchange volume, with transfers limited to the water available. Solid obstacles block these exchanges. Escaping volume produces droplets with gravity-driven trajectories.
 
-Three.js buffer geometries store vertex positions directly. Visible effects update those positions and recompute normals for lighting. `spillVisibility.ts` bounds each effect from the current simulation before mesh rebuilding, with a 5 cm margin and the real camera/table transform. It includes maximum sheet flight/ripples and current stream/cup motion. Physics continues while invisible. Reentering the view rebuilds current geometry even while paused; backwards seeks invalidate all mesh caches. Owned geometries are disposed on unmount to release GPU memory.
+Three.js buffer geometries store vertex positions directly. Visible effects update those positions and recompute normals for lighting. `spillVisibility.ts` bounds each effect from the current simulation before mesh rebuilding, with a 5 cm margin and the real camera/table transform. It includes maximum sheet flight/ripples and current stream/cup motion. Physics continues while invisible. Reentering the view rebuilds current geometry, including at unchanged animation time. Owned geometries are disposed on unmount to release GPU memory.
 
 This remains an approximate real-time effect, not a full 3D fluid solver. The edge sheet follows conserved rim emissions, not extra simulated water. Its width and length follow measured rim flow; deterministic folds and tears break the sheet into rivulets as flow diminishes. The puddle and thin flow use a transparent standard material with the room's baked reflection; cup liquid retains physical refraction. `OpeningCanvas` sets the transmission target to 75% linear resolution without reducing canvas DPR. Camera framing and the physics grid/step are unchanged.
 
 ## Verification
 
-Run `npm run typecheck`, `npm run lint`, `npm test -- --maxWorkers=1`, and `npm run build` from the project root. Tests cover cup motion/contact, water conservation, dry obstacles, gravity, replay, cadence independence, liquid geometry and the extracted renderers. Review the animation in the browser after visual edits; numeric tests do not establish visual quality or mobile performance.
+Run `npm run typecheck`, `npm run lint`, `npm test -- --maxWorkers=1`, and `npm run build` from the project root. Tests cover cup motion/contact, water conservation, dry obstacles, gravity, cadence independence, liquid geometry and the extracted renderers. Review the animation in the browser after visual edits; numeric tests do not establish visual quality or mobile performance.

@@ -76,7 +76,6 @@ it('preserves the handoff, eases into each destination and restores free flight 
   renderHook(() =>
     TelevisionStatic({
       playing: false,
-      reset: 0,
       colorDither: true,
       elapsedRef,
       navigationRef,

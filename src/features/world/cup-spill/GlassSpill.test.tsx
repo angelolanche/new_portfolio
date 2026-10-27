@@ -23,7 +23,7 @@ vi.mock('@react-three/fiber', () => ({
 }));
 afterEach(() => vi.restoreAllMocks());
 
-it('skips invisible mesh work while preserving physics, refreshes on paused look, and clears old water on replay', () => {
+it('skips invisible mesh work while preserving physics and refreshes when looking back', () => {
   const advance = vi.spyOn(TableWaterSimulation.prototype, 'advance');
   const updateSurface = vi.spyOn(tabletop, 'updateTabletopWaterMesh');
   const elapsedRef = { current: 0 };
@@ -77,10 +77,6 @@ it('skips invisible mesh work while preserving physics, refreshes on paused look
   expect(updateSurface).toHaveBeenCalledTimes(updates + 1);
   frame.callback({ camera });
   expect(updateSurface).toHaveBeenCalledTimes(updates + 1);
-  elapsedRef.current = 0;
-  frame.callback({ camera });
-  expect(surface.geometry.drawRange.count).toBe(0);
-  expect(actual.surfaceVolume).toBe(0);
   expect(element.props.children).toHaveLength(4);
   material.dispose();
 });

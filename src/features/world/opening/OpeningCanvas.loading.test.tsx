@@ -56,7 +56,6 @@ afterEach(() => {
 function setup() {
   const props: ComponentProps<typeof OpeningCanvas> = {
     playing: true,
-    reset: 0,
     elapsedRef: { current: 0 },
     pointerRef: { current: { x: 0, y: 0 } },
     colorDither: false,

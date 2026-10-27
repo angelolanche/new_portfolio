@@ -7,7 +7,7 @@ const limit = (value: number) => Math.max(-1, Math.min(1, value));
 const horizontalLookAngle = (Math.PI * 8) / 180;
 const verticalLookAngle = (Math.PI * 5) / 180;
 
-export const workLookAngle = (Math.PI * 120) / 180;
+export const workLookAngle = Math.PI / 4;
 
 export function sampleLookRange(seconds: number, inspecting = false) {
   const t = Math.max(0, Math.min(1, (seconds - openingDuration) / 1.2));

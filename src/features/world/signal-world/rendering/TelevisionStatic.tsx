@@ -39,7 +39,6 @@ import {
 /** The CRT is a window into the same scene that takes over the viewport. */
 export function TelevisionStatic({
   playing,
-  reset,
   colorDither,
   elapsedRef,
   navigationRef,
@@ -48,7 +47,6 @@ export function TelevisionStatic({
   openingReadyRef,
 }: {
   playing: boolean;
-  reset: number;
   colorDither: boolean;
   elapsedRef: RefObject<number>;
   navigationRef: RefObject<SignalNavigation>;
@@ -82,7 +80,7 @@ export function TelevisionStatic({
   }));
   const snowMaterial = useRef<ShaderMaterial>(null);
   const screenMaterial = useRef<ShaderMaterial>(null);
-  const timeline = useRef({ time: 0, reset });
+  const timeline = useRef({ time: 0 });
   const ready = useRef(false);
   const initialized = useRef(false);
   const offset = useRef(new Vector3());
@@ -153,10 +151,6 @@ export function TelevisionStatic({
   useFrame(({ gl, scene, camera, size }, delta) => {
     const worldCamera = worldCameraRef.current!;
     if (!(camera instanceof PerspectiveCamera)) return;
-    if (timeline.current.reset !== reset) {
-      timeline.current = { time: 0, reset };
-      ready.current = false;
-    }
     if (playing) timeline.current.time += Math.min(delta, 0.1);
     if (snowMaterial.current) {
       snowMaterial.current.uniforms.time.value = timeline.current.time;
@@ -279,7 +273,6 @@ export function TelevisionStatic({
       worldClock.current,
       ready.current && !navigationRef.current.detailOpen,
       navigationRef.current,
-      reset,
     );
     gl.getDrawingBufferSize(screen.resolution.value);
     const { x: width, y: height } = screen.resolution.value;
@@ -331,7 +324,6 @@ export function TelevisionStatic({
         <>
           <SignalComposition
             navigationRef={navigationRef}
-            elapsedRef={elapsedRef}
             playing={playing}
             clockRef={worldClock}
           />
@@ -354,6 +346,7 @@ export function TelevisionStatic({
             playing={playing}
             navigationRef={navigationRef}
             clockRef={timeline}
+            floatClockRef={worldClock}
           />
         </>,
         world,

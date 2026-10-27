@@ -13,6 +13,31 @@ import { projects } from '../../../../content/projects';
 import { canvas, setup, enterTv } from './openingHarness';
 
 describe('Opening routes', () => {
+  it('opens an arrived work with Enter and restores its camera state on Escape', async () => {
+    const scene = await setup();
+    fireEvent.keyDown(scene, { key: 'Enter' });
+    expect(window.location.pathname).toBe('/');
+    await enterTv();
+    fireEvent.keyDown(scene, { key: 'Enter' });
+    expect(window.location.pathname).toBe('/');
+    fireEvent.wheel(scene, { deltaY: 10 });
+    fireEvent.keyDown(scene, { key: 'Enter' });
+    expect(window.location.pathname).toBe('/');
+    const navigation = canvas.props!.navigationRef.current;
+    navigation.progress = navigation.target;
+    fireEvent.keyDown(scene, { key: 'Enter', repeat: true });
+    expect(window.location.pathname).toBe('/');
+    fireEvent.keyDown(scene, { key: 'Enter' });
+    expect(window.location.pathname).toBe(`/projects/${projects[0].slug}`);
+    const detail = screen.getByRole('dialog', { name: projects[0].title });
+    fireEvent(detail, new Event('cancel', { bubbles: true, cancelable: true }));
+    await waitFor(() => expect(window.location.pathname).toBe('/'));
+    expect(navigation.progress).toBe(projects[0].progress);
+    expect(navigation.target).toBe(projects[0].progress);
+    expect(navigation.detailOpen).toBe(false);
+    expect(scene).toHaveFocus();
+  });
+
   it('opens a shareable project and restores the same travel state through browser back/forward', async () => {
     const scene = await setup();
     await enterTv();

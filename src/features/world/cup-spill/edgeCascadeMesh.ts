@@ -9,7 +9,7 @@ const smooth = (low: number, high: number, value: number) => {
   return t * t * (3 - 2 * t);
 };
 // Smooth, deterministic noise travels with the water. No per-frame randomness:
-// pause/replay keeps the same folds, thinning edges and tears.
+// each timestamp keeps the same folds, thinning edges and tears.
 function sheetNoise(x: number, y: number) {
   const ix = Math.floor(x),
     iy = Math.floor(y);

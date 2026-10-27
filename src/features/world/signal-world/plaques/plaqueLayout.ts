@@ -24,8 +24,7 @@ type PlaqueAnchor = {
 
 /** Fit once on arrival, then attach the saved pose to the film in both modes. */
 export function createPlaqueLayout() {
-  let anchors = new WeakMap<Group, PlaqueAnchor>();
-  let resetVersion = 0;
+  const anchors = new WeakMap<Group, PlaqueAnchor>();
   let lastArrival: number | undefined;
   const center = new Vector3();
   const corner = new Vector3();
@@ -84,13 +83,7 @@ export function createPlaqueLayout() {
     seconds: number,
     enabled: boolean,
     navigation: SignalNavigation,
-    reset = 0,
   ) => {
-    if (reset !== resetVersion) {
-      resetVersion = reset;
-      anchors = new WeakMap();
-      lastArrival = undefined;
-    }
     const travelling = isSignalTravelling(navigation);
     if (travelling || navigation.target !== lastArrival)
       lastArrival = undefined;

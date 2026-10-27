@@ -3,7 +3,7 @@ import type { Vector3 } from 'three';
 export const videoFloatAmplitude = 0.38;
 export const floatPeriod = (seed: number) => 24 + (seed % 5) * 4;
 
-/** Bounded, periodic offsets: no accumulated drift, and an exact replay origin. */
+/** Bounded, periodic offsets: no accumulated drift, and a deterministic origin. */
 export function sampleFloat(
   time: number,
   seed: number,

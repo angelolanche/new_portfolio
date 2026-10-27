@@ -2,7 +2,7 @@ import { spillSettings } from './spillSettings';
 import { glassContactTime } from './spillMotion';
 
 // Reference phases: a short inertial splash, followed by a cohesive main pour.
-// Both simulation and meshes read the same absolute-time envelope for replay.
+// Both simulation and meshes read the same absolute-time envelope.
 export function sampleWaterRelease(seconds: number) {
   const age = seconds - (glassContactTime - spillSettings.release.burstLead);
   if (age <= 0) return { burst: 0, settled: 0, extraSpeed: 0 };

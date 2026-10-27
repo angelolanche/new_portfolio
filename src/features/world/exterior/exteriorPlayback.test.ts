@@ -20,7 +20,7 @@ function createVideo() {
   return { video, play, pause, load };
 }
 
-it('synchronizes the room video, freezes during Pause/dialogs and restarts on Replay', () => {
+it('synchronizes the room video, suspends during loading and dialogs', () => {
   const { video, play, pause } = createVideo();
   const playback = createExteriorPlayback(video, false);
   playback.update(3, true);
@@ -35,11 +35,9 @@ it('synchronizes the room video, freezes during Pause/dialogs and restarts on Re
   expect(pause).toHaveBeenCalledOnce();
   playback.update(3.1, true);
   expect(play).toHaveBeenCalledTimes(2);
-  playback.update(0, true);
-  expect(video.currentTime).toBe(0);
 });
 
-it('releases the decoder at TV entry, reloads on Replay and cleans up on unmount', () => {
+it('releases the decoder at TV entry and cleans up on unmount', () => {
   const { video, play, load } = createVideo();
   const playback = createExteriorPlayback(video, false);
   playback.update(0, true);
@@ -50,12 +48,10 @@ it('releases the decoder at TV entry, reloads on Replay and cleans up on unmount
   for (let frame = 0; frame < 60; frame++)
     playback.update(openingDuration, true);
   expect(load).toHaveBeenCalledOnce();
-  playback.update(0, true);
-  expect(video.getAttribute('src')).toBe(exteriorVideo);
-  expect(play).toHaveBeenCalledTimes(2);
+  expect(play).toHaveBeenCalledOnce();
   playback.dispose();
   expect(video.hasAttribute('src')).toBe(false);
-  expect(load).toHaveBeenCalledTimes(2);
+  expect(load).toHaveBeenCalledOnce();
   playback.update(0, true);
   expect(video.hasAttribute('src')).toBe(false);
 });
@@ -75,7 +71,7 @@ it('uses only the poster for reduced motion and waits for decoded data before pl
   expect(play).toHaveBeenCalledOnce();
 });
 
-it('does not retry failed network/decoder requests every frame, but allows Replay', () => {
+it('does not retry failed network/decoder requests every frame', () => {
   const { video, load } = createVideo();
   const playback = createExteriorPlayback(video, false);
   playback.update(1, true);
@@ -84,8 +80,6 @@ it('does not retry failed network/decoder requests every frame, but allows Repla
     playback.update(1 + frame / 60, true);
   expect(video.hasAttribute('src')).toBe(false);
   expect(load).toHaveBeenCalledOnce();
-  playback.update(0, true);
-  expect(video.getAttribute('src')).toBe(exteriorVideo);
 });
 
 it('does not retry rejected autoplay every frame', async () => {

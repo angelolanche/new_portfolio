@@ -10,7 +10,7 @@ import { createFlight } from '../signal-world/navigation/signalNavigation';
 import type { SignalNavigation } from '../signal-world/navigation/signalNavigation';
 
 it.each(['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'])(
-  'caps mouse inspection at 120 degrees for %s and recenters on the next journey',
+  'caps mouse inspection at 45 degrees for %s and recenters on the next journey',
   (key) => {
     const elapsedRef = { current: openingDuration + 5 };
     const pointerRef = { current: { x: 0, y: 0 } };
@@ -29,7 +29,6 @@ it.each(['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'])(
         elapsedRef={elapsedRef}
         pointerRef={pointerRef}
         navigationRef={navigationRef}
-        reset={0}
         playing={false}
       />,
     );
@@ -43,7 +42,7 @@ it.each(['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'])(
     ).toBe(1);
     expect(
       camera.getWorldDirection(new Vector3()).dot(new Vector3(0, 0, -1)),
-    ).toBeCloseTo(-0.5, 6);
+    ).toBeCloseTo(Math.SQRT1_2, 6);
     navigationRef.current.lookKeys = {};
     navigationRef.current.target = projects[1].progress;
     frame.callback({ camera }, 1 / 60);
@@ -73,7 +72,6 @@ it('turns continuously with held arrow keys, releases on keyup and suppresses lo
       elapsedRef={elapsedRef}
       pointerRef={pointerRef}
       navigationRef={navigationRef}
-      reset={0}
       playing={false}
     />,
   );
@@ -104,7 +102,6 @@ it('holds movement during GPU warmup and discards its slow frame before starting
       pointerRef={{ current: { x: 0, y: 0 } }}
       openingReadyRef={openingReadyRef}
       playing
-      reset={0}
     />,
   );
   frame.callback({ camera }, 0.8);
@@ -128,11 +125,11 @@ vi.mock('@react-three/fiber', () => ({
   ) => selector({ size: { width: 1600, height: 900 } }),
 }));
 
-it('preserves paused pointer look and restores the opening pose on replay after TV entry', () => {
+it('preserves pointer look and dialog suspension after TV entry', () => {
   const elapsedRef = { current: openingDuration + 6 };
   const pointerRef = { current: { x: 1, y: 0.5 } };
   const camera = new PerspectiveCamera();
-  const props = { elapsedRef, pointerRef, reset: 0, playing: false };
+  const props = { elapsedRef, pointerRef, playing: false };
   const view = render(<CameraMove {...props} />);
   frame.callback({ camera }, 1 / 60);
   const finalPose = sampleOpening(openingDuration, 16 / 9);
@@ -149,14 +146,6 @@ it('preserves paused pointer look and restores the opening pose on replay after 
   frame.callback({ camera }, 1 / 60);
   expect(camera.position).toEqual(suspendedPosition);
   expect(camera.quaternion.toArray()).toEqual(suspendedOrientation.toArray());
-
-  view.rerender(<CameraMove {...props} reset={1} />);
-  frame.callback({ camera }, 1 / 60);
-  expect(elapsedRef.current).toBe(0);
-  expect(pointerRef.current).toEqual({ x: 0, y: 0 });
-  expect(
-    camera.position.distanceTo(sampleOpening(0, 16 / 9).position),
-  ).toBeLessThan(1e-10);
 });
 
 it('enters the TV centered without converting the room pointer position into a free turn', () => {
@@ -167,7 +156,6 @@ it('enters the TV centered without converting the room pointer position into a f
     <CameraMove
       elapsedRef={elapsedRef}
       pointerRef={pointerRef}
-      reset={0}
       playing={false}
     />,
   );
@@ -205,7 +193,6 @@ it.each([0, ...projects.map((project) => project.progress), 1])(
         elapsedRef={elapsedRef}
         pointerRef={pointerRef}
         navigationRef={navigationRef}
-        reset={0}
         playing={false}
       />,
     );

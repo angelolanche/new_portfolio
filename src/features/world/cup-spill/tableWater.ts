@@ -95,28 +95,12 @@ export class TableWaterSimulation {
     const targetStep = Math.floor(
       Math.max(0, Math.min(spillDuration, seconds)) / simulationStepSeconds,
     );
-    if (targetStep < Math.round(this.time / simulationStepSeconds))
-      this.reset();
     while (Math.round(this.time / simulationStepSeconds) < targetStep) {
       this.time =
         (Math.round(this.time / simulationStepSeconds) + 1) *
         simulationStepSeconds;
       this.stepSimulation();
     }
-  }
-  private reset() {
-    this.time = 0;
-    this.remainingCupVolume = initialWaterVolume;
-    this.dischargedVolume = 0;
-    this.escapedVolume = 0;
-    this.waterDepths.fill(0);
-    for (const edge of this.edges) edge.flux = 0;
-    this.droplets.length = 0;
-    this.recentDropletsByLocation.clear();
-    this.dischargeRate = 0;
-    this.pouringSpeed = 0;
-    this.waterSurfaceHeight =
-      spillSettings.water.initialSurfaceHeight * spillSettings.cup.heightScale;
   }
   private stepSimulation() {
     if (this.time <= impactTime) return;

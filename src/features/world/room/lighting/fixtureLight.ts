@@ -1,5 +1,5 @@
 // Abrupt contact failures separated by long steady intervals, on the playback clock.
-// No random frame noise: pause, replay and reduced motion remain deterministic.
+// No random frame noise: scene suspension and reduced motion remain deterministic.
 export function sampleFixtureIntensity(time: number): number {
   const failures = [
     [1.85, 1.92, 0.015],

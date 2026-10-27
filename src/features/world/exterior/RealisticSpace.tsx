@@ -114,7 +114,7 @@ export function RealisticSpace({
       material.uniforms.image.value = texture;
       material.uniforms.videoFrame.value = true;
       // A decoded frame may predate VideoTexture's frame callback subscription.
-      // Force its first upload even while the opening is still paused.
+      // Force its first upload even before the opening starts.
       texture.needsUpdate = true;
       displayReadyRef.current = true;
     };

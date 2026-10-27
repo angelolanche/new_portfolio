@@ -30,7 +30,7 @@ import { initialWaterVolume } from './cupWaterVolume';
 import { sampleWaterRelease } from './waterRelease';
 
 describe('water rendering across the shared timeline', () => {
-  it('uploads only active surface data and keeps animated bounds valid through replay and offscreen culling', () => {
+  it('uploads only active surface data and keeps animated bounds valid during animation and offscreen culling', () => {
     const simulation = new TableWaterSimulation();
     const surface = createTabletopWaterGeometry();
     const stream = createPouringWaterGeometry();
@@ -43,7 +43,7 @@ describe('water rendering across the shared timeline', () => {
       new Mesh(cascade, material),
     ];
     const point = new Vector3();
-    for (const time of [0, 2.2, 3.1, 4, 6, 9, 10.9, 0]) {
+    for (const time of [0, 2.2, 3.1, 4, 6, 9, 10.9]) {
       simulation.advance(time);
       updateTabletopWaterMesh(surface, simulation);
       updatePouringWaterMesh(
@@ -106,7 +106,7 @@ describe('water rendering across the shared timeline', () => {
     for (const geometry of [surface, stream, cascade]) geometry.dispose();
     material.dispose();
   });
-  it('reveals the spill after tipping and clears the visible water on replay', () => {
+  it('reveals the spill after tipping and ends the pouring stream', () => {
     const simulation = new TableWaterSimulation();
     const surface = createTabletopWaterGeometry();
     const stream = createPouringWaterGeometry();
@@ -137,9 +137,6 @@ describe('water rendering across the shared timeline', () => {
         expect(surface.getAttribute('color').getW(vertex)).toBe(0);
     }
     update(spillDuration);
-    expect(streamMesh.visible).toBe(false);
-    update(0);
-    expect(surface.drawRange.count).toBe(0);
     expect(streamMesh.visible).toBe(false);
     surface.dispose();
     stream.dispose();

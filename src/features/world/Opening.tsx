@@ -60,8 +60,6 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
   const indexDialog = useRef<HTMLDialogElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const pushedProject = useRef(false);
-  const [playing, setPlaying] = useState(!reducedMotion);
-  const [reset, setReset] = useState(0);
 
   const [entered, setEntered] = useState(
     Boolean(project) || aboutOpen || reducedMotion,
@@ -76,14 +74,12 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
     indexDialog,
     entered,
     blocked: Boolean(project) || aboutOpen || indexOpen,
-    onTogglePlayback: () => setPlaying((value) => !value),
-    onReplay: () => {
-      if (!reducedMotion) {
-        elapsedRef.current = 0;
-        setReset((value) => value + 1);
-        setEntered(false);
-        setPlaying(true);
-      }
+    onOpenWork: () => {
+      const selected = projects.find(
+        (item) =>
+          Math.abs(item.progress - navigationRef.current.progress) < 0.00001,
+      );
+      if (selected) openProject(selected);
     },
   });
   const onEntered = useCallback(() => {
@@ -155,13 +151,13 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
         work during travel. Move the mouse to look around a work after arriving.
         In free flight, use arrow keys to look. Page Up and Page Down select
         works. Use two fingers to look up or down on touchscreens. WASD moves
-        freely; Q/E descends or ascends. Space pauses; R restarts.
+        freely; Q/E descends or ascends. Press Enter to open the selected work.
+        Press Esc to return from a work.
       </p>
       <SceneBoundary>
         <Suspense fallback={<LoadingScreen />}>
           <OpeningCanvas
-            playing={playing && !project && !aboutOpen && !indexOpen}
-            reset={reset}
+            playing={!reducedMotion && !project && !aboutOpen && !indexOpen}
             elapsedRef={elapsedRef}
             pointerRef={pointerRef}
             colorDither={colorDither}

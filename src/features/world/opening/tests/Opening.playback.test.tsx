@@ -39,7 +39,7 @@ describe('Opening playback', () => {
     }
   });
 
-  it('gates wheel travel behind the entry and resets navigation on Replay', async () => {
+  it('gates wheel travel behind the entry and ignores removed replay shortcuts', async () => {
     const scene = await setup();
     fireEvent.wheel(scene, { deltaY: 650 });
     expect(canvas.props?.navigationRef.current.target).toBe(0);
@@ -49,11 +49,13 @@ describe('Opening playback', () => {
       projects[0].progress,
     );
     fireEvent.keyDown(scene, { key: 'r' });
-    expect(canvas.props?.navigationRef.current.target).toBe(0);
+    expect(canvas.props?.navigationRef.current.target).toBeCloseTo(
+      projects[0].progress,
+    );
     expect(screen.queryByRole('slider')).not.toBeInTheDocument();
   });
 
-  it('keeps free flight, pause and restart on the keyboard without visible controls', async () => {
+  it('keeps free flight and ignores removed pause and restart shortcuts', async () => {
     const scene = await setup();
     await enterTv();
     fireEvent.keyDown(scene, { key: 'w' });
@@ -69,7 +71,7 @@ describe('Opening playback', () => {
     fireEvent.keyUp(scene, { key: 'e' });
     expect(canvas.props?.navigationRef.current.flight?.movement.up).toBe(0);
     fireEvent.keyDown(scene, { key: ' ', code: 'Space' });
-    expect(canvas.props?.playing).toBe(false);
+    expect(canvas.props?.playing).toBe(true);
     fireEvent.keyDown(scene, { key: ' ', code: 'Space' });
     expect(canvas.props?.playing).toBe(true);
     fireEvent.keyDown(scene, { key: 'd' });
@@ -80,7 +82,7 @@ describe('Opening playback', () => {
       canvas.props!.navigationRef.current.flight!.target.x = 5;
     });
     fireEvent.keyDown(scene, { key: 'r' });
-    expect(canvas.props?.navigationRef.current.flight?.position.x).toBe(0);
-    expect(canvas.props?.navigationRef.current.flight?.target.x).toBe(0);
+    expect(canvas.props?.navigationRef.current.flight?.position.x).toBe(5);
+    expect(canvas.props?.navigationRef.current.flight?.target.x).toBe(5);
   });
 });

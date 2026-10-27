@@ -47,7 +47,6 @@ function CanvasFallback({ onReady }: { onReady: () => void }) {
 
 const OpeningCanvas = memo(function OpeningCanvas({
   playing,
-  reset,
   elapsedRef,
   pointerRef,
   colorDither,
@@ -57,7 +56,6 @@ const OpeningCanvas = memo(function OpeningCanvas({
   suspended,
 }: {
   playing: boolean;
-  reset: number;
   elapsedRef: RefObject<number>;
   pointerRef: RefObject<PointerLook>;
   colorDither: boolean;
@@ -116,7 +114,6 @@ const OpeningCanvas = memo(function OpeningCanvas({
           openingReadyRef={openingReadyRef}
           navigationRef={navigationRef}
           playing={playing && ready}
-          reset={reset}
           elapsedRef={elapsedRef}
           pointerRef={pointerRef}
           suspended={suspended}
@@ -130,7 +127,6 @@ const OpeningCanvas = memo(function OpeningCanvas({
         <TelevisionStatic
           openingReadyRef={openingReadyRef}
           playing={playing && ready}
-          reset={reset}
           colorDither={colorDither}
           elapsedRef={elapsedRef}
           navigationRef={navigationRef}

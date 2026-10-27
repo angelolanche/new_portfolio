@@ -19,7 +19,7 @@ function createVideo() {
   return { video, play, pause, load };
 }
 
-it('loops on the scene clock, freezes on pause, resumes and resets on Replay', () => {
+it('loops on the scene clock, suspends for dialogs and resumes', () => {
   const { video, play, pause } = createVideo();
   const playback = createTitlePlayback(video);
   playback.update(3.7, true);
@@ -36,8 +36,6 @@ it('loops on the scene clock, freezes on pause, resumes and resets on Replay', (
   expect(pause).toHaveBeenCalledOnce();
   playback.update(3.75, true);
   expect(play).toHaveBeenCalledTimes(2);
-  playback.update(0, true);
-  expect(video.currentTime).toBe(0);
 });
 
 it('waits for decoded data and releases the decoder when disposed', () => {

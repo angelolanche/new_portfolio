@@ -1,5 +1,7 @@
 import { expect, it } from 'vitest';
-import { Vector3 } from 'three';
+import { PerspectiveCamera, Vector3 } from 'three';
+import { signalCameraOffset } from '../navigation/signalNavigation';
+import { sunInstructionPitch } from './sunInstructionLayout';
 import { projects } from '../../../../content/projects';
 import {
   projectBlockDepth,
@@ -57,11 +59,47 @@ it('keeps all 27 rendered threads clear of every video and exposes the first lea
 
 it('ends the lead before the entire solar corona, with a visible gap', () => {
   const sun = new Vector3(...signalSunPosition);
-  const pieces = cutThread([sun.clone().add(new Vector3(0, -40, 0)), sun]);
+  const pieces = cutThread([sun.clone().add(new Vector3(0, -90, 0)), sun]);
   expect(pieces).toHaveLength(1);
   expect(pieces[0].at(-1)!.distanceTo(sun)).toBeCloseTo(
     signalSunClearanceRadius,
     8,
   );
   expect(signalSunClearanceRadius).toBeGreaterThanOrEqual(26);
+});
+
+it('cuts all red threads before the final sun framing on desktop and narrow screens', () => {
+  const geometry = createSignalThreads();
+  try {
+    const vertices = geometry.getAttribute('position');
+    const point = new Vector3();
+    for (const aspect of [0.4, 9 / 16, 1, 16 / 9, 32 / 9]) {
+      const camera = new PerspectiveCamera(
+        (aspect < 1 ? 54 : 50) + Math.max(0, 1 - aspect) * 35,
+        aspect,
+        0.03,
+        400,
+      );
+      signalCameraOffset(1, camera.position);
+      camera.position.z -= 1.5;
+      camera.rotation.x = sunInstructionPitch;
+      camera.updateMatrixWorld();
+      let visible = 0;
+      for (let i = 0; i < vertices.count; i++) {
+        point.fromBufferAttribute(vertices, i).project(camera);
+        if (
+          Math.abs(point.x) <= 1 &&
+          Math.abs(point.y) <= 1 &&
+          point.z >= -1 &&
+          point.z <= 1
+        )
+          visible++;
+      }
+      expect(visible, `visible red thread vertices at aspect ${aspect}`).toBe(
+        0,
+      );
+    }
+  } finally {
+    geometry.dispose();
+  }
 });

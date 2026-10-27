@@ -8,6 +8,7 @@ import { createSignalThreads } from './signalThreads';
 import { signalCenterZ, projectBlockDepth } from '../signalLayout';
 import { sampleFloat } from '../signalFloat';
 import { SignalSun } from './SignalSun';
+import { SunInstructions } from './SunInstructions';
 
 const threadColor = '#ed191c';
 const signalForms = Array.from({ length: 146 }, (_, formIndex) => {
@@ -56,12 +57,10 @@ const signalForms = Array.from({ length: 146 }, (_, formIndex) => {
 
 export function SignalComposition({
   navigationRef,
-  elapsedRef,
   playing,
   clockRef,
 }: {
   navigationRef: RefObject<SignalNavigation>;
-  elapsedRef: RefObject<number>;
   playing: boolean;
   clockRef: RefObject<number>;
 }) {
@@ -71,7 +70,6 @@ export function SignalComposition({
   const threads = useMemo(() => createSignalThreads(), []);
   useEffect(() => () => threads.dispose(), [threads]);
   useFrame((_, delta) => {
-    if (elapsedRef.current === 0) clockRef.current = 0;
     if (
       playing &&
       !navigationRef.current.detailOpen &&
@@ -108,7 +106,6 @@ export function SignalComposition({
           key={project.slug}
           project={project}
           navigationRef={navigationRef}
-          elapsedRef={elapsedRef}
           playing={playing}
           clockRef={clockRef}
         />
@@ -184,6 +181,7 @@ export function SignalComposition({
         })}
       </group>
       <SignalSun clockRef={clockRef} />
+      <SunInstructions clockRef={clockRef} />
     </group>
   );
 }

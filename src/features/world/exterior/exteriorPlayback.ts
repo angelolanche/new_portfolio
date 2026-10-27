@@ -10,7 +10,6 @@ export function createExteriorPlayback(
 ) {
   let requested = false;
   let failed = false;
-  let previousTime = 0;
   let disposed = false;
   let generation = 0;
   const release = () => {
@@ -30,12 +29,6 @@ export function createExteriorPlayback(
     },
     update(seconds: number, playing: boolean) {
       if (disposed) return;
-      if (seconds < previousTime) {
-        generation++;
-        failed = false;
-        requested = false;
-      }
-      previousTime = seconds;
       if (reducedMotion || seconds >= openingDuration) {
         if (video.hasAttribute('src')) release();
         return;

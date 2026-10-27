@@ -207,7 +207,7 @@ it('never recomputes positions, orientation or scale from camera changes or swit
   }
 });
 
-it('preserves saved placement through dialogs and revisits, and clears it only on Replay', () => {
+it('preserves saved placement through dialogs and refits on guided revisits', () => {
   const camera = new PerspectiveCamera(50, 16 / 9, 0.03, 400);
   const plaques = createPlaques();
   const layout = createPlaqueLayout();
@@ -215,7 +215,6 @@ it('preserves saved placement through dialogs and revisits, and clears it only o
   const navigation = navigationAt(0);
   frameProject(camera, 0, seconds);
   layout(plaques, camera, seconds, true, { ...navigation, mode: 'free' });
-  const defaults = plaques.map(transform);
   layout(plaques, camera, seconds, true, navigation);
   const arrival = plaques.map(transform);
   layout(plaques, camera, seconds, false, navigation);
@@ -230,10 +229,6 @@ it('preserves saved placement through dialogs and revisits, and clears it only o
   frameProject(camera, 0, seconds);
   layout(plaques, camera, seconds, true, navigation);
   expect(transform(plaques[0])).not.toEqual(arrival[0]);
-  assertInFrame(plaques[0], camera);
-  layout(plaques, camera, seconds, true, { ...navigation, mode: 'free' }, 1);
-  expect(plaques.map(transform)).toEqual(defaults);
-  layout(plaques, camera, seconds, true, navigation, 1);
   assertInFrame(plaques[0], camera);
 });
 

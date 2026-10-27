@@ -48,7 +48,6 @@ export function GlassSpill({ elapsedRef }: { elapsedRef: RefObject<number> }) {
   const surfaceRef = useRef<Mesh>(null);
   const cascadeRef = useRef<Mesh>(null);
   const simulationRef = useRef<TableWaterSimulation | null>(null);
-  const lastSimulationTime = useRef(-1);
   const visibility = useMemo(() => createSpillVisibility(), []);
   const lastRenderedTime = useRef<Record<SpillPart, number>>({
     cup: -1,
@@ -74,16 +73,11 @@ export function GlassSpill({ elapsedRef }: { elapsedRef: RefObject<number> }) {
     [cupWaterGeometry, surfaceGeometry, streamGeometry, cascadeGeometry],
   );
   useFrame(({ camera }) => {
-    // The room is fully covered by the television world. Replay still seeks
-    // backwards through advance(), restoring the exact deterministic state.
+    // The room is fully covered by the television world after entry.
     if (elapsedRef.current >= openingDuration || !spillRef.current) return;
     simulationRef.current ??= new TableWaterSimulation();
     const simulation = simulationRef.current;
     simulation.advance(elapsedRef.current);
-    if (simulation.time < lastSimulationTime.current)
-      for (const part of Object.keys(lastRenderedTime.current) as SpillPart[])
-        lastRenderedTime.current[part] = -1;
-    lastSimulationTime.current = simulation.time;
     const pose = sampleSpillMotion(simulation.time);
     spillRef.current.updateWorldMatrix(true, false);
     const visible = visibility.sample(

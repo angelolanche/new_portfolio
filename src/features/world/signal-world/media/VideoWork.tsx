@@ -19,20 +19,17 @@ import { trackSceneAsset } from '../../opening/scenePreload';
 export function VideoWork({
   project,
   navigationRef,
-  elapsedRef,
   playing,
   clockRef,
 }: {
   project: Project;
   navigationRef: RefObject<SignalNavigation>;
-  elapsedRef: RefObject<number>;
   playing: boolean;
   clockRef: RefObject<number>;
 }) {
   const videoMaterialRef = useRef<MeshBasicMaterial>(null);
   const videoElementRef = useRef<HTMLVideoElement | null>(null);
   const videoReadyRef = useRef<(() => void) | null>(null);
-  const previousElapsedRef = useRef(0);
   const videoGroupRef = useRef<Group>(null);
   const floatPosition = useRef(new Vector3());
   const floatRotation = useRef(new Vector3());
@@ -124,12 +121,6 @@ export function VideoWork({
     }
     const video = videoElementRef.current;
     if (!video) return;
-    if (
-      elapsedRef.current < previousElapsedRef.current &&
-      video.readyState >= 1
-    )
-      video.currentTime = 0;
-    previousElapsedRef.current = elapsedRef.current;
     const nearby =
       Math.abs(navigationRef.current.progress - project.progress) < 0.085;
     if (nearby && !video.src && !navigationRef.current.reducedMotion) {

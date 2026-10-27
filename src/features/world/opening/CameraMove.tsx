@@ -24,7 +24,6 @@ import {
 
 export function CameraMove({
   playing,
-  reset,
   elapsedRef,
   pointerRef,
   suspended = false,
@@ -32,7 +31,6 @@ export function CameraMove({
   openingReadyRef,
 }: {
   playing: boolean;
-  reset: number;
   elapsedRef: RefObject<number>;
   pointerRef: RefObject<PointerLook>;
   suspended?: boolean;
@@ -40,7 +38,6 @@ export function CameraMove({
   openingReadyRef?: RefObject<boolean>;
 }) {
   const wasReady = useRef(!openingReadyRef);
-  const lastReset = useRef(reset);
   const lookRef = useRef<PointerLook>({ x: 0, y: 0 });
   const weightedPointer = useRef<PointerLook>({ x: 0, y: 0 });
   const aspect = useThree(({ size }) => size.width / size.height);
@@ -50,12 +47,6 @@ export function CameraMove({
   const lastSample = useRef({ time: -1, sampler: samplePose });
   useFrame(({ camera }, delta) => {
     if (suspended && lastPose.current) return;
-    if (lastReset.current !== reset) {
-      elapsedRef.current = 0;
-      lastReset.current = reset;
-      lookRef.current = { x: 0, y: 0 };
-      pointerRef.current = { x: 0, y: 0 };
-    }
     const ready = openingReadyRef?.current ?? true;
     const clockDelta = ready && wasReady.current ? Math.min(delta, 0.1) : 0;
     wasReady.current = ready;

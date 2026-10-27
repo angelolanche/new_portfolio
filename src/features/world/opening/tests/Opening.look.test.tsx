@@ -8,7 +8,7 @@ import { advanceSignal } from '../../signal-world/navigation/signalNavigation';
 import { canvas, setup, enterTv } from './openingHarness';
 
 describe('Opening look', () => {
-  it('keeps free mode after key release and blur until the next scroll or restart', async () => {
+  it('keeps free mode after key release and blur until the next scroll, ignoring the removed restart key', async () => {
     const scene = await setup();
     await enterTv();
     const navigation = canvas.props!.navigationRef.current;
@@ -24,7 +24,7 @@ describe('Opening look', () => {
     fireEvent.keyDown(scene, { key: 'd' });
     expect(navigation.mode).toBe('free');
     fireEvent.keyDown(scene, { key: 'r' });
-    expect(navigation.mode).toBe('scroll');
+    expect(navigation.mode).toBe('free');
   });
 
   it.each([0, 1])(

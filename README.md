@@ -2,7 +2,7 @@
 
 English-language interactive portfolio built with Vite, React, strict TypeScript, Three.js and React Three Fiber. The approved room, water animation, color dither, signal universe, navigation, project/About URLs, camera restoration and HTML content access are implemented.
 
-The exterior uses a local NASA/JPL-Caltech black-hole video on a distant curved backdrop, with photographic color outside the room's dither treatment. Pause, Replay and reduced motion are supported; media sources and credits are in [CREDITS.md](public/media/exterior/CREDITS.md).
+The exterior uses a local NASA/JPL-Caltech black-hole video on a distant curved backdrop, with photographic color outside the room's dither treatment. Scene suspension during dialogs and reduced motion are supported; media sources and credits are in [CREDITS.md](public/media/exterior/CREDITS.md).
 
 Current scope is closed as of 2026-10-27. No implementation tasks or files are awaiting changes. Preserve the implemented state; product references and verification limits below do not constitute an active backlog. Further changes start from a new request.
 
@@ -22,7 +22,7 @@ Compact checks overwrite `.logs/<check>.log`. Standard scripts and watch mode re
 
 ## Current experience
 
-Run `npm run dev` to view the opening. At 11.4 seconds, the signal universe takes over the viewport, followed by a 2.2-second entry glide. The title uses the supplied video reference. Wheel, keyboard and touch gestures navigate between works; mouse inspection and keyboard free flight remain available. Work index and About provide HTML access, and project URLs support browser back/forward with navigation-state restoration. Space pauses, R restarts, and reduced-motion visitors start inside the signal. Creative details are maintained in BETWEEN_FRAMES_CONTEXT.md; the current source map is in docs/architecture.md.
+Run `npm run dev` to view the opening. At 11.4 seconds, the signal universe takes over the viewport, followed by a 2.2-second entry glide. The title uses the supplied video reference. Wheel, keyboard and touch gestures navigate between works; mouse inspection and keyboard free flight remain available. Work index and About provide HTML access, and project URLs support browser back/forward with navigation-state restoration. The scene runs automatically without pause/replay shortcuts; reduced-motion visitors start inside the signal. Creative details are maintained in BETWEEN_FRAMES_CONTEXT.md; the current source map is in docs/architecture.md.
 
 ## Where to edit
 
