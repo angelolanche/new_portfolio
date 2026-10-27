@@ -95,4 +95,5 @@ export function updatePouringWaterMesh(
   }
   position.needsUpdate = true;
   streamGeometry.computeVertexNormals();
+  streamGeometry.computeBoundingSphere();
 }

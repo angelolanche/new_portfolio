@@ -1,6 +1,6 @@
-import { FinishedBox as Box } from '../FinishedBox';
-import { televisionPosition } from '../sceneLayout';
-import { TelevisionFinish } from '../RoomFinishDetails';
+import { FinishedBox as Box } from '../surfaces/FinishedBox';
+import { televisionPosition } from './sceneLayout';
+import { TelevisionFinish } from './details/RoomFinishDetails';
 import { WallUnitUpper } from './WallUnitUpper';
 
 export function TelevisionCabinet() {

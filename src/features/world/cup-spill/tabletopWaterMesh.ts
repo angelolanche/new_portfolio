@@ -1,6 +1,12 @@
 import { spillSettings } from './spillSettings';
-import { BufferAttribute, BufferGeometry } from 'three';
-import { tableRadius } from '../sceneLayout';
+import {
+  BufferAttribute,
+  BufferGeometry,
+  DynamicDrawUsage,
+  Sphere,
+  Vector3,
+} from 'three';
+import { tableRadius } from '../room/sceneLayout';
 import { TableWaterSimulation } from './tableWater';
 import { getGridCellPosition, waterGrid } from './waterGrid';
 
@@ -34,6 +40,10 @@ export function createTabletopWaterGeometry() {
     new BufferAttribute(new Uint32Array(triangleCount * 24), 1),
   );
   geometry.setDrawRange(0, 0);
+  for (const attribute of Object.values(geometry.attributes))
+    (attribute as BufferAttribute).setUsage(DynamicDrawUsage);
+  geometry.getIndex()!.setUsage(DynamicDrawUsage);
+  geometry.boundingSphere = new Sphere(new Vector3(), 0);
   return geometry;
 }
 
@@ -164,9 +174,8 @@ export function updateTabletopWaterMesh(
         }
       }
     }
-  indices.array.fill(0, indexCount);
   // Compute normals only for the current triangles, not unused buffer capacity.
-  normals.array.fill(0);
+  normals.array.fill(0, 0, vertexCount * 3);
   for (let i = 0; i < indexCount; i += 3) {
     const a = indices.getX(i),
       b = indices.getX(i + 1),
@@ -195,9 +204,30 @@ export function updateTabletopWaterMesh(
     const length = Math.hypot(x, y, z) || 1;
     normals.setXYZ(i, x / length, y / length, z / length);
   }
-  indices.needsUpdate = true;
-  positions.needsUpdate = true;
-  colors.needsUpdate = true;
-  normals.needsUpdate = true;
+  for (const [attribute, count] of [
+    [indices, indexCount],
+    [positions, vertexCount * 3],
+    [colors, vertexCount * 4],
+    [normals, vertexCount * 3],
+  ] as const) {
+    const buffer = attribute as BufferAttribute;
+    buffer.clearUpdateRanges();
+    if (count > 0) {
+      buffer.addUpdateRange(0, count);
+      buffer.needsUpdate = true;
+    }
+  }
+  // The wet surface stays inside the rim. Include its actual maximum depth.
+  const maxDepth = visibleDepths.reduce(
+    (max, depth) => Math.max(max, depth),
+    0,
+  );
+  surfaceGeometry.boundingSphere!.center.set(
+    0,
+    spillSettings.water.puddleBaseHeight,
+    0,
+  );
+  surfaceGeometry.boundingSphere!.radius =
+    Math.hypot(tableRadius, maxDepth) + 1e-6;
   surfaceGeometry.setDrawRange(0, indexCount);
 }

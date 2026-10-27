@@ -1,13 +1,13 @@
-import { FinishedBox as Box } from '../FinishedBox';
-import { Upholstery } from '../Upholstery';
-import { RoomMaterial } from '../RoomSurfaces';
+import { FinishedBox as Box } from '../surfaces/FinishedBox';
+import { Upholstery } from './details/Upholstery';
+import { RoomMaterial } from '../surfaces/RoomSurfaces';
 import {
   wovenChairPosition,
   wovenChairYaw,
   armchairPosition,
   armchairYaw,
   sofaPosition,
-} from '../sceneLayout';
+} from './sceneLayout';
 
 export function WovenChair() {
   return (

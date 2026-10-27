@@ -1,11 +1,11 @@
-import { FinishedBox as Box } from '../FinishedBox';
+import { FinishedBox as Box } from '../surfaces/FinishedBox';
 import {
   entryDoorPosition,
   entryDoorScale,
   sideWindowPosition,
   sideWindowScale,
-} from '../sceneLayout';
-import { WindowSpace } from '../WindowSpace';
+} from './sceneLayout';
+import { WindowSpace } from '../exterior/WindowSpace';
 
 export function EntryDoor() {
   return (

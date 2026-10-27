@@ -1,4 +1,4 @@
-// Owner-selected defaults from Downloads/cup-spill-settings (2).json (2026-10-21).
+// Physics: owner-selected export (2026-10-21). Simpler water appearance: 2026-10-27.
 // Distances are meters, time is seconds, angles are radians. Edit approved defaults here; no runtime tuning panel.
 export const defaultSpillSettings = {
   cup: {
@@ -7,16 +7,12 @@ export const defaultSpillSettings = {
   },
   appearance: {
     waterColor: '#ecebf4',
-    waterRoughness: 0,
-    waterTransmission: 1,
-    waterOpacity: 0.82,
-    puddleTransmission: 1,
-    puddleRoughness: 0,
+    waterRoughness: 0.22,
+    waterTransmission: 0.55,
+    waterOpacity: 0.5,
+    puddleRoughness: 0.24,
     puddleColor: '#ecebf4',
-    puddleOpacity: 0.85,
-    puddleThickness: 0.009,
-    puddleClearcoat: 0.88,
-    puddleClearcoatRoughness: 0.1,
+    puddleOpacity: 0.32,
     glassOpacity: 0.13,
     glassRoughness: 0.08,
   },
@@ -67,16 +63,6 @@ export const defaultSpillSettings = {
     lengthScale: 1.2,
     deformation: 2,
     cohesion: 0.2,
-  },
-  droplets: {
-    mainScatter: 0.09,
-    burstScatter: 0.14,
-    maximumVisibleCount: 1800,
-    visibleLifetime: 0.8,
-    minimumVisibleHeight: 0.05,
-    minimumRadius: 0.001,
-    maximumRadius: 0.031,
-    verticalStretchRate: 1.5,
   },
 };
 

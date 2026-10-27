@@ -3,10 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="An interactive software engineering portfolio, currently in development." />
+    <meta
+      name="description"
+      content="An interactive software engineering portfolio, currently in development."
+    />
     <title>Interactive Portfolio</title>
+    <link rel="stylesheet" href="/src/app/loading.css" />
   </head>
   <body>
+    <div
+      id="boot-loader"
+      class="scene-loading"
+      aria-label="Preparing the scene"
+    >
+      <div class="loading-tv" aria-hidden="true">
+        <div class="loading-screen"><div class="loading-fluid"></div></div>
+        <i></i>
+      </div>
+      <div>
+        <span class="loading-percent">0%</span
+        ><span class="loading-caption"
+          >The percentage reaches 100% sooner than it should, but by the time
+          you realize it, it doesn’t matter anymore.</span
+        >
+      </div>
+    </div>
+    <noscript
+      ><style>
+        #boot-loader {
+          display: none;
+        }</style
+      >This portfolio requires JavaScript for its interactive scene.</noscript
+    >
     <div id="root"></div>
     <script type="module" src="/src/app/main.tsx"></script>
   </body>

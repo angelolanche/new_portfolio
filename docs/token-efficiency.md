@@ -23,6 +23,7 @@ Complete this scope and report the result concisely.
 - Keep durable truth in focused repository documents. Replace obsolete decisions at their source; preserve history separately when valuable.
 - Treat current code, configuration, and verification as evidence. Historical test counts and chat claims are not current validation.
 - Read relevant sections only. Search headings in large references, then read surrounding chronology when decisions conflict.
+- For world work, consult the architecture source map and search declarations/test names before reading whole files. `Opening.tsx` is needed for HTML composition and dialog/URL integration; input lives in `opening/useOpeningControls.ts` and `useOpeningPointer.ts`. Opening regressions are split into `opening/tests/Opening.{navigation,look,playback,routes,touch}.test.tsx` with a shared `openingHarness.tsx`. Load only the matching suite. The CRT lifecycle test in `signal-world/rendering/TelevisionStatic.test.tsx` intentionally covers a connected sequence; read it only for render handoff, world-camera integration or render-state restoration. Run all required checks even when reading only affected tests.
 - Attach relevant screenshots, pages, and references, including enough surrounding information to interpret them correctly.
 - Saying "ignore earlier messages" clarifies priority but does not itself remove those messages from context.
 
@@ -42,7 +43,7 @@ Token estimates are optional approximations, not measured usage or guaranteed ac
 - Use `npm run --silent validate:ai` for tests, lint, typecheck, and build. It stops at the first failure; fix it and rerun to cover remaining checks.
 - Individual compact commands: `npm run --silent test:ai`, `npm run --silent lint:ai`, `npm run --silent typecheck:ai`, and `npm run --silent build:ai`.
 - `build:ai` runs Vite only. `validate:ai` and standard `build` include TypeScript validation.
-- Forward arguments with an extra separator: `npm run --silent test:ai -- -- src/features/world/cameraPath.test.ts`.
+- Forward arguments with an extra separator: `npm run --silent test:ai -- -- src/features/world/opening/cameraPath.test.ts`.
 - Full emitted stdout/stderr is retained in `.logs/<check>.log`, overwriting that check's previous log. Passing-test console output suppressed by Vitest is not emitted and therefore is not in the log. Failures print at most 120 trailing lines and 16,000 characters; inspect relevant earlier log sections if needed.
 - Use standard commands for watch mode or complete live output. Paste the command, relevant error, reproduction, and recent change instead of whole logs.
 - Build further output filters only for concrete recurring needs, such as browser-test failures or bundle reports. Extra infrastructure has its own maintenance and context cost.

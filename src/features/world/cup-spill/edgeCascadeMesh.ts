@@ -1,6 +1,6 @@
 import { spillSettings } from './spillSettings';
 import { BufferAttribute, BufferGeometry } from 'three';
-import { glassPosition, tableRadius } from '../sceneLayout';
+import { glassPosition, tableRadius } from '../room/sceneLayout';
 import { TableWaterSimulation } from './tableWater';
 import { sampleWaterRelease } from './waterRelease';
 
@@ -52,7 +52,7 @@ export function createEdgeCascadeGeometry() {
   return geometry;
 }
 
-// A thin sheet bridges the table edge and the separate falling droplets.
+// A thin sheet follows the conserved rim flow; detached drops are not rendered.
 export function updateEdgeCascadeMesh(
   cascadeGeometry: BufferGeometry,
   simulation: TableWaterSimulation,
@@ -184,4 +184,5 @@ export function updateEdgeCascadeMesh(
   cascadePosition.needsUpdate = true;
   cascadeColor.needsUpdate = true;
   cascadeGeometry.computeVertexNormals();
+  cascadeGeometry.computeBoundingSphere();
 }

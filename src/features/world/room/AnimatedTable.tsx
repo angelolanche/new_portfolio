@@ -1,14 +1,14 @@
-import { FinishedBox as Box } from '../FinishedBox';
+import { FinishedBox as Box } from '../surfaces/FinishedBox';
 import { useRef, type RefObject } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Group, Vector2 } from 'three';
-import { tablePosition, tableRadius, phonePosition } from '../sceneLayout';
+import { tablePosition, tableRadius, phonePosition } from './sceneLayout';
 import { sampleSpillMotion } from '../cup-spill/spillMotion';
 import { GlassSpill } from '../cup-spill/GlassSpill';
-import { RoomMaterial } from '../RoomSurfaces';
-import { PhoneCord, TableFinish } from '../RoomFinishDetails';
-import { PhoneDetails, TableLamp } from '../TabletopDetails';
-import { openingDuration } from '../cameraPath';
+import { RoomMaterial } from '../surfaces/RoomSurfaces';
+import { PhoneCord, TableFinish } from './details/RoomFinishDetails';
+import { PhoneDetails, TableLamp } from './details/TabletopDetails';
+import { openingDuration } from '../opening/cameraPath';
 
 export function AnimatedTable({
   elapsedRef,

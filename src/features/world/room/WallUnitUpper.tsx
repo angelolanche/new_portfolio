@@ -1,7 +1,7 @@
-import { FinishedBox as Box } from '../FinishedBox';
+import { FinishedBox as Box } from '../surfaces/FinishedBox';
 import { DoubleSide } from 'three';
-import { ShelfKeepsakes } from '../ShelfKeepsakes';
-import { wallUnitUpperPanels } from '../sceneLayout';
+import { ShelfKeepsakes } from './details/ShelfKeepsakes';
+import { wallUnitUpperPanels } from './sceneLayout';
 
 function PorcelainVase({
   position,

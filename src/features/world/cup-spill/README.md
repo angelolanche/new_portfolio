@@ -2,13 +2,13 @@
 
 Start with `GlassSpill.tsx`: it advances the shared simulation, updates the cup pose, then updates each water effect. The scene mounts it inside the moving table in `../room/AnimatedTable.tsx`. That parent applies the table jolt to every object together.
 
-The final owner export, `cup-spill-settings (2).json` (2026-10-21), is saved in `spillSettings.ts`. The tuning GUI and import/export code have been removed. Adjust `appearance.puddle*` there for tabletop material changes; the approved flow, cup, cascade and camera are unchanged. Play/Pause and Replay remain available.
+The physics from the owner export, `cup-spill-settings (2).json` (2026-10-21), remains in `spillSettings.ts`. The owner requested simpler water graphics and removal of detached visual droplets on 2026-10-27. The tuning GUI stays removed. Play/Pause and Replay remain available.
 
 ## Where to edit
 
 | File                   | Responsibility                                                                 |
 | ---------------------- | ------------------------------------------------------------------------------ |
-| `spillSettings.ts`     | Timing, bump, bounce, slosh, water flow, droplet appearance and limits         |
+| `spillSettings.ts`     | Timing, bump, bounce, slosh, water flow and water appearance                   |
 | `spillMotion.ts`       | Cup tipping and table vibration; precomputed gravity-driven rotation           |
 | `GlassSpill.tsx`       | Scene assembly, glass shape/material, animation lifecycle and resource cleanup |
 | `WaterMaterial.tsx`    | Shared water color, transparency, refraction and roughness                     |
@@ -20,30 +20,29 @@ The final owner export, `cup-spill-settings (2).json` (2026-10-21), is saved in 
 | `pouringWaterMesh.ts`  | Stream connecting the cup opening to the table                                 |
 | `edgeCascadeMesh.ts`   | Thin water sheet spilling over the table edge                                  |
 | `dropletMotion.ts`     | Droplet data and gravity-driven trajectories                                   |
-| `fallingDroplets.ts`   | Droplet visibility, scale and instanced rendering                              |
+| `spillVisibility.ts`   | Conservative per-effect bounds for skipping invisible mesh updates             |
 
 ## Common edits
 
-- Change `timing.impactAfterStart` to move the table bump earlier or later relative to the start of camera motion. `actionDuration` is the 10-second spill window after the bump; the camera follows its separate 14.5-second approach before entering the TV world.
+- Change `timing.impactAfterStart` to move the table bump earlier or later relative to the start of camera motion. `actionDuration` is the 10-second spill window after the bump; the camera follows its separate 11.4-second approach before entering the TV world.
 - Change `motion.joltDistance` for the table shake; `initialAngularVelocity` and `secondAngularImpulse` control the cup's two reactions. Motion is sampled across the action window. If the cup does not reach contact, it keeps its sampled rocking motion instead of jumping to a tipped pose.
-- Change `water.initialSurfaceHeight` for the initial fill (currently 0.18 m before cup scaling). Keep it inside the cup's inner height. Change `outletArea` for how quickly water pours out.
-- Change `droplets.minimumRadius`, `maximumRadius` and `verticalStretchRate` for droplet appearance. These are visual controls; they do not change the simulated volume.
+- Change `water.initialSurfaceHeight` for the initial fill. Keep it inside the cup's inner height. Change `outletArea` for how quickly water pours out.
 - Edit `appearance` in `spillSettings.ts` for water color, opacity, transmission and roughness, plus glass opacity and roughness. `WaterMaterial.tsx` has additional material details. `ior` controls refraction, while `roughness` softens highlights. Vertex alpha hides thin/dry parts of the puddle and cascade.
-- Cup position and table radius remain in `../sceneLayout.ts`. Use `cup.heightScale` and `cup.radiusScale` in `spillSettings.ts` to scale the glass, internal water and tipping calculation together. Large changes can exceed the table or camera framing; review those manually. Table-object obstacle bounds are in the `TableWaterSimulation` constructor.
+- Cup position and table radius remain in `../room/sceneLayout.ts`. Use `cup.heightScale` and `cup.radiusScale` in `spillSettings.ts` to scale the glass, internal water and tipping calculation together. Large changes can exceed the table or camera framing; review those manually. Table-object obstacle bounds are in the `TableWaterSimulation` constructor.
 
 Distances use meters, time uses seconds, angles use radians, volumes use cubic meters, and discharge rates use cubic meters per second. Positions for the spill are local to the table group; the cup's internal mesh uses cup-local coordinates. Reload after changing settings, because motion samples and initial water volume are computed when modules load.
 
 ## How it works
 
-The reference-driven release has two phases: a brief outward splash around tipping, followed by a more cohesive main flow with sparse detached tips. `waterRelease.ts` shares the transient impulse between discharge, trajectories and meshes; it does not change the camera or implement the future Between Frames transition.
+The reference-driven release has two phases: a brief outward splash around tipping, followed by a more cohesive main flow. `waterRelease.ts` shares the transient impulse between discharge, trajectories and meshes. Detached tips are no longer rendered.
 
 The simulation advances in fixed 1/120-second steps. Rendering reads the simulation state without advancing a separate clock, preserving pause and replay behavior. Seeking backwards resets and replays the simulation. The elapsed time comes from the existing opening controls, including reduced-motion handling. Replay returns to the beginning of the approved approach.
 
 The liquid inside the cup is clipped by a gravity-oriented plane: it does not rotate like a solid cylinder. On the table, each grid cell stores a shallow water depth. Neighboring cells exchange volume, with transfers limited to the water available. Solid obstacles block these exchanges. Escaping volume produces droplets with gravity-driven trajectories.
 
-Three.js buffer geometries store vertex positions directly. Each effect updates those positions and recomputes normals for lighting. Falling droplets use an `InstancedMesh`: sparse deformed water tips share geometry and material, each with its own transform. Owned geometries are disposed on unmount to release GPU memory.
+Three.js buffer geometries store vertex positions directly. Visible effects update those positions and recompute normals for lighting. `spillVisibility.ts` bounds each effect from the current simulation before mesh rebuilding, with a 5 cm margin and the real camera/table transform. It includes maximum sheet flight/ripples and current stream/cup motion. Physics continues while invisible. Reentering the view rebuilds current geometry even while paused; backwards seeks invalidate all mesh caches. Owned geometries are disposed on unmount to release GPU memory.
 
-This remains an approximate real-time effect, not a full 3D fluid solver. The edge sheet is a visual bridge to the droplets, not extra simulated water. Its width and length follow measured rim flow; advected deterministic folds and tears break the initial sheet into uneven rivulets as flow diminishes. The puddle has a dedicated, slightly less transmissive material and a small contact-line threshold to keep the residual patch visible and contained. Existing camera framing can crop part of the falling water; this refactor does not change framing or appearance.
+This remains an approximate real-time effect, not a full 3D fluid solver. The edge sheet follows conserved rim emissions, not extra simulated water. Its width and length follow measured rim flow; deterministic folds and tears break the sheet into rivulets as flow diminishes. The puddle and thin flow use a transparent standard material with the room's baked reflection; cup liquid retains physical refraction. `OpeningCanvas` sets the transmission target to 75% linear resolution without reducing canvas DPR. Camera framing and the physics grid/step are unchanged.
 
 ## Verification
 

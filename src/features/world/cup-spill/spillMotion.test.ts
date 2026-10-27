@@ -6,8 +6,8 @@ import {
   glassContactTime,
   impactTime,
 } from './spillMotion';
-import { glassPosition, tableRadius } from '../sceneLayout';
-import { openingDuration, sampleOpening } from '../cameraPath';
+import { glassPosition, tableRadius } from '../room/sceneLayout';
+import { openingDuration, sampleOpening } from '../opening/cameraPath';
 
 describe('tabletop spill choreography', () => {
   it('holds through the approach, reacts with the table, rocks opposite and then falls left', () => {
@@ -30,9 +30,11 @@ describe('tabletop spill choreography', () => {
     );
     expect(sampleSpillMotion(spillDuration).jolt).toBe(0);
     expect(sampleSpillMotion(0)).toEqual(sampleSpillMotion(-1));
-    expect(sampleOpening(spillDuration, 1.6).position.z).toBeGreaterThan(
-      sampleOpening(openingDuration, 1.6).position.z,
-    );
+    // Entry now completes before the simulation's full tail. The main spill
+    // remains visible during the approach; its unseen tail need not delay entry.
+    expect(
+      sampleOpening(glassContactTime + 1.4, 1.6).position.z,
+    ).toBeGreaterThan(sampleOpening(openingDuration, 1.6).position.z);
     expect(
       sampleOpening(Math.max(spillDuration, openingDuration), 1.6),
     ).toEqual(sampleOpening(openingDuration, 1.6));

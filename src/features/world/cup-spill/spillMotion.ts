@@ -1,5 +1,5 @@
 import { spillSettings } from './spillSettings';
-import { glassPosition, tableRadius } from '../sceneLayout';
+import { glassPosition, tableRadius } from '../room/sceneLayout';
 
 export const impactTime = spillSettings.timing.impactAfterStart;
 export const spillDuration = impactTime + spillSettings.timing.actionDuration;

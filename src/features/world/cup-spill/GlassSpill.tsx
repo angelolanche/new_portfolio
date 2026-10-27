@@ -1,18 +1,9 @@
 import { spillSettings } from './spillSettings';
 import { useEffect, useMemo, useRef, type RefObject } from 'react';
 import { useFrame } from '@react-three/fiber';
-import {
-  DoubleSide,
-  Group,
-  InstancedMesh,
-  Mesh,
-  Object3D,
-  Quaternion,
-  Vector3,
-  Vector2,
-} from 'three';
-import { glassPosition } from '../sceneLayout';
-import { openingDuration } from '../cameraPath';
+import { DoubleSide, Group, Mesh, Quaternion, Vector3, Vector2 } from 'three';
+import { glassPosition } from '../room/sceneLayout';
+import { openingDuration } from '../opening/cameraPath';
 import { sampleSpillMotion } from './spillMotion';
 import { CupWaterGeometry } from './CupWaterGeometry';
 import { TableWaterSimulation } from './tableWater';
@@ -29,10 +20,7 @@ import {
   createEdgeCascadeGeometry,
   updateEdgeCascadeMesh,
 } from './edgeCascadeMesh';
-import {
-  createDetachedWaterGeometry,
-  updateFallingDroplets,
-} from './fallingDroplets';
+import { createSpillVisibility, type SpillPart } from './spillVisibility';
 
 function createGlassProfile() {
   return [
@@ -53,48 +41,69 @@ function createGlassProfile() {
 
 export function GlassSpill({ elapsedRef }: { elapsedRef: RefObject<number> }) {
   const glassProfile = useMemo(() => createGlassProfile(), []);
+  const spillRef = useRef<Group>(null);
   const glassRef = useRef<Group>(null);
   const cupWaterRef = useRef<Mesh>(null);
   const streamRef = useRef<Mesh>(null);
-  const dropletsRef = useRef<InstancedMesh>(null);
+  const surfaceRef = useRef<Mesh>(null);
+  const cascadeRef = useRef<Mesh>(null);
   const simulationRef = useRef<TableWaterSimulation | null>(null);
-  const lastRenderedTimeRef = useRef(-1);
+  const lastSimulationTime = useRef(-1);
+  const visibility = useMemo(() => createSpillVisibility(), []);
+  const lastRenderedTime = useRef<Record<SpillPart, number>>({
+    cup: -1,
+    surface: -1,
+    stream: -1,
+    cascade: -1,
+  });
   const cupWaterGeometry = useMemo(() => new CupWaterGeometry(), []);
   const surfaceGeometry = useMemo(() => createTabletopWaterGeometry(), []);
   const streamGeometry = useMemo(() => createPouringWaterGeometry(), []);
-  const detachedGeometry = useMemo(() => createDetachedWaterGeometry(), []);
   const cascadeGeometry = useMemo(() => createEdgeCascadeGeometry(), []);
   const yawRotation = useMemo(() => new Quaternion(), []);
   const spinRotation = useMemo(() => new Quaternion(), []);
   const upAxis = useMemo(() => new Vector3(0, 1, 0), []);
   const tiltAxis = useMemo(() => new Vector3(0, 0, 1), []);
-  const dropletTransform = useMemo(() => new Object3D(), []);
   useEffect(
     () => () => {
       cupWaterGeometry.dispose();
       surfaceGeometry.dispose();
       streamGeometry.dispose();
       cascadeGeometry.dispose();
-      detachedGeometry.dispose();
     },
-    [
-      cupWaterGeometry,
-      surfaceGeometry,
-      streamGeometry,
-      cascadeGeometry,
-      detachedGeometry,
-    ],
+    [cupWaterGeometry, surfaceGeometry, streamGeometry, cascadeGeometry],
   );
-  useFrame(() => {
+  useFrame(({ camera }) => {
     // The room is fully covered by the television world. Replay still seeks
     // backwards through advance(), restoring the exact deterministic state.
-    if (elapsedRef.current >= openingDuration) return;
+    if (elapsedRef.current >= openingDuration || !spillRef.current) return;
     simulationRef.current ??= new TableWaterSimulation();
     const simulation = simulationRef.current;
     simulation.advance(elapsedRef.current);
-    if (lastRenderedTimeRef.current === simulation.time) return;
-    lastRenderedTimeRef.current = simulation.time;
+    if (simulation.time < lastSimulationTime.current)
+      for (const part of Object.keys(lastRenderedTime.current) as SpillPart[])
+        lastRenderedTime.current[part] = -1;
+    lastSimulationTime.current = simulation.time;
     const pose = sampleSpillMotion(simulation.time);
+    spillRef.current.updateWorldMatrix(true, false);
+    const visible = visibility.sample(
+      camera,
+      spillRef.current.matrixWorld,
+      simulation,
+      pose,
+    );
+    if (glassRef.current) glassRef.current.visible = visible.cup;
+    if (surfaceRef.current) surfaceRef.current.visible = visible.surface;
+    if (cascadeRef.current) cascadeRef.current.visible = visible.cascade;
+    if (streamRef.current)
+      streamRef.current.visible =
+        visible.stream && simulation.dischargeRate > 0.00001;
+    const needsUpdate = (part: SpillPart) => {
+      if (!visible[part] || lastRenderedTime.current[part] === simulation.time)
+        return false;
+      lastRenderedTime.current[part] = simulation.time;
+      return true;
+    };
     if (glassRef.current) {
       glassRef.current.quaternion
         .setFromAxisAngle(tiltAxis, pose.angle)
@@ -106,16 +115,22 @@ export function GlassSpill({ elapsedRef }: { elapsedRef: RefObject<number> }) {
         pose.z,
       );
     }
-    cupWaterGeometry.update(
-      simulation.waterSurfaceHeight,
-      pose.angle,
-      pose.slosh,
-      pose.spin,
-    );
+    if (simulation.remainingCupVolume > 1e-6 && needsUpdate('cup'))
+      cupWaterGeometry.update(
+        simulation.waterSurfaceHeight,
+        pose.angle,
+        pose.slosh,
+        pose.spin,
+      );
     if (cupWaterRef.current)
       cupWaterRef.current.visible = simulation.remainingCupVolume > 1e-6;
-    updateTabletopWaterMesh(surfaceGeometry, simulation);
-    if (streamRef.current) {
+    if (needsUpdate('surface'))
+      updateTabletopWaterMesh(surfaceGeometry, simulation);
+    if (
+      streamRef.current &&
+      streamRef.current.visible &&
+      needsUpdate('stream')
+    ) {
       updatePouringWaterMesh(
         streamGeometry,
         streamRef.current,
@@ -123,13 +138,11 @@ export function GlassSpill({ elapsedRef }: { elapsedRef: RefObject<number> }) {
         pose,
       );
     }
-    updateEdgeCascadeMesh(cascadeGeometry, simulation);
-    if (dropletsRef.current) {
-      updateFallingDroplets(dropletsRef.current, dropletTransform, simulation);
-    }
+    if (needsUpdate('cascade'))
+      updateEdgeCascadeMesh(cascadeGeometry, simulation);
   });
   return (
-    <>
+    <group ref={spillRef}>
       <group ref={glassRef} position={glassPosition}>
         <mesh>
           <latheGeometry args={[glassProfile, 48]} />
@@ -147,7 +160,7 @@ export function GlassSpill({ elapsedRef }: { elapsedRef: RefObject<number> }) {
           />
         </mesh>
         <mesh ref={cupWaterRef} geometry={cupWaterGeometry}>
-          <WaterMaterial />
+          <WaterMaterial volume />
         </mesh>
         <mesh
           position={[0, 0.418 * spillSettings.cup.heightScale, 0]}
@@ -169,27 +182,15 @@ export function GlassSpill({ elapsedRef }: { elapsedRef: RefObject<number> }) {
           />
         </mesh>
       </group>
-      <mesh geometry={surfaceGeometry} frustumCulled={false}>
+      <mesh ref={surfaceRef} geometry={surfaceGeometry}>
         <WaterMaterial surface puddle />
       </mesh>
-      <mesh ref={streamRef} geometry={streamGeometry} frustumCulled={false}>
+      <mesh ref={streamRef} geometry={streamGeometry}>
         <WaterMaterial />
       </mesh>
-      <mesh geometry={cascadeGeometry} frustumCulled={false}>
+      <mesh ref={cascadeRef} geometry={cascadeGeometry}>
         <WaterMaterial surface />
       </mesh>
-      <instancedMesh
-        ref={dropletsRef}
-        args={[
-          undefined,
-          undefined,
-          spillSettings.droplets.maximumVisibleCount,
-        ]}
-        frustumCulled={false}
-      >
-        <primitive object={detachedGeometry} attach="geometry" />
-        <WaterMaterial />
-      </instancedMesh>
-    </>
+    </group>
   );
 }

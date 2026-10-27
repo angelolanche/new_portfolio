@@ -9,7 +9,7 @@ import {
 } from './cupWaterVolume';
 import { getGridCellPosition, cellArea } from './waterGrid';
 import { glassContactTime, impactTime, spillDuration } from './spillMotion';
-import { tableRadius } from '../sceneLayout';
+import { tableRadius } from '../room/sceneLayout';
 
 describe('gravity driven water', () => {
   it('keeps the initial water inside the upright glass before the bump', () => {

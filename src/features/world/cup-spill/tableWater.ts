@@ -1,6 +1,6 @@
 import { sampleWaterRelease } from './waterRelease';
 import { spillSettings } from './spillSettings';
-import { glassPosition, tableRadius } from '../sceneLayout';
+import { glassPosition, tableRadius } from '../room/sceneLayout';
 import {
   sampleSpillMotion,
   simulationStepSeconds,

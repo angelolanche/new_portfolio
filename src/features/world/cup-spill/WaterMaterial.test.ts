@@ -1,8 +1,12 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { defaultSpillSettings, spillSettings } from './spillSettings';
 import { initialWaterVolume } from './cupWaterVolume';
 import { glassContactTime, sampleSpillMotion } from './spillMotion';
 import { WaterMaterial } from './WaterMaterial';
+
+vi.mock('../surfaces/roomSurfaceContext', () => ({
+  useRoomReflection: () => undefined,
+}));
 
 afterEach(() =>
   Object.assign(spillSettings.appearance, defaultSpillSettings.appearance),
@@ -15,25 +19,36 @@ describe('independent tabletop water material', () => {
     const settings = structuredClone(defaultSpillSettings);
     settings.appearance.puddleColor = '#abcdef';
     settings.appearance.puddleRoughness = 0.1;
-    settings.appearance.puddleTransmission = 0.8;
     settings.appearance.puddleOpacity = 0.7;
-    settings.appearance.puddleThickness = 0.03;
-    settings.appearance.puddleClearcoat = 0.6;
-    settings.appearance.puddleClearcoatRoughness = 0.2;
     Object.assign(spillSettings.appearance, settings.appearance);
     expect(WaterMaterial({ puddle: true, surface: true }).props).toMatchObject({
       color: '#abcdef',
       roughness: 0.1,
-      transmission: 0.8,
       opacity: 0.7,
-      thickness: 0.03,
-      clearcoat: 0.6,
-      clearcoatRoughness: 0.2,
       vertexColors: true,
       depthWrite: false,
     });
     expect(WaterMaterial({}).props).toEqual(fallingBefore);
     expect(initialWaterVolume).toBe(volumeBefore);
     expect(sampleSpillMotion(glassContactTime + 1)).toEqual(motionBefore);
+  });
+  it('keeps refraction inside the cup while thin water uses the room reflection model', () => {
+    expect(WaterMaterial({ volume: true }).type).toBe('meshPhysicalMaterial');
+    expect(WaterMaterial({ volume: true }).props.transmission).toBeGreaterThan(
+      0,
+    );
+    for (const options of [
+      {},
+      { surface: true },
+      { surface: true, puddle: true },
+    ]) {
+      const material = WaterMaterial(options);
+      expect(material.type).toBe('meshStandardMaterial');
+      expect(material.props).toMatchObject({
+        forceSinglePass: true,
+        transparent: true,
+      });
+      expect(material.props).not.toHaveProperty('transmission');
+    }
   });
 });

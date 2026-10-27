@@ -4,6 +4,7 @@ Build the English-language Between Frames portfolio using Vite, React, strict Ty
 
 ## Work and communication
 
+- Hard limit: no work stage may exceed 10 minutes of wall-clock time. Track elapsed time from the start, including investigation, tools, implementation and verification. Keep scope small enough to finish within that limit; do not reset the clock by silently splitting one request into more stages. Prioritize token efficiency and demonstrated benefit over exhaustive exploration. Avoid optional experiments and repeated measurements. If the limit approaches, stop expanding scope, preserve a safe and reviewable state, and report completed work, verification actually performed and remaining limitations. Never claim completion or passing checks without evidence. Continuing beyond the limit requires explicit user authorization; do not continue automatically.
 - Complete the requested scope autonomously in meaningful steps. Pause for unresolved product decisions, major architecture changes, significant dependencies, paid services, publishing, or destructive actions unless already authorized.
 - Preserve existing user changes. Inspect Git status before editing; keep changes scoped and avoid unrelated refactoring or empty scaffolding.
 - Keep progress and final reports concise: outcome, meaningful decisions, verification, and limitations. Explain unfamiliar Three.js concepts when useful. Token estimates and account-usage reports are optional, only on request.
@@ -14,6 +15,7 @@ Build the English-language Between Frames portfolio using Vite, React, strict Ty
 
 - Product or navigation behavior: [product requirements](docs/product-requirements.md).
 - Structure or conventions: [architecture](docs/architecture.md).
+- Read `Opening.tsx` only for HTML composition, dialogs or project/About URLs. For input, start in `opening/useOpeningControls.ts` (keyboard/wheel) or `opening/useOpeningPointer.ts` (mouse/touch). Read only the relevant `opening/tests/Opening.<behavior>.test.tsx`; see the architecture source map before opening large scene/test files.
 - Visual or scene work: relevant sections of [creative context](BETWEEN_FRAMES_CONTEXT.md). Search headings first; preserve the consolidated approved state unless the user requests a change.
 - Setup and historical results: [README](README.md).
 - Workflow optimization: [best practices](docs/token-efficiency.md); cross-chat continuation: [handoff template](docs/templates/handoff.md).

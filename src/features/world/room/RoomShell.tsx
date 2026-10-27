@@ -1,5 +1,5 @@
-import { FinishedBox as Box } from '../FinishedBox';
-import { roomBounds, roomCeiling, windowWallSections } from '../sceneLayout';
+import { FinishedBox as Box } from '../surfaces/FinishedBox';
+import { roomBounds, roomCeiling, windowWallSections } from './sceneLayout';
 
 export function RoomShell() {
   const width = roomBounds.right - roomBounds.left;

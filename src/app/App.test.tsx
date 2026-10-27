@@ -11,13 +11,17 @@ vi.mock('../features/world/Opening', () => ({
 import { App } from './App';
 
 describe('App', () => {
-  it('shows the portfolio heading and development status', () => {
+  it('uses the scene as the complete site without a header or footer', () => {
     render(<App />);
 
     expect(
       screen.getByRole('heading', { level: 1, name: 'Interactive Portfolio' }),
     ).toBeVisible();
-    expect(screen.getByText('This portfolio is in development.')).toBeVisible();
+    expect(screen.queryByRole('banner')).not.toBeInTheDocument();
+    expect(screen.queryByRole('contentinfo')).not.toBeInTheDocument();
+    expect(screen.getByRole('main')).toContainElement(
+      screen.getByTestId('opening'),
+    );
   });
 
   it('uses color dither for the only opening presentation', () => {

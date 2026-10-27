@@ -1,47 +1,41 @@
 import { spillSettings } from './spillSettings';
 import { DoubleSide } from 'three';
+import { useRoomReflection } from '../surfaces/roomSurfaceContext';
 
 export function WaterMaterial({
   surface = false,
   puddle = false,
+  volume = false,
 }: {
   surface?: boolean;
   puddle?: boolean;
+  volume?: boolean;
 }) {
-  return (
+  const reflection = useRoomReflection();
+  const { appearance } = spillSettings;
+  const material = {
+    color: puddle ? appearance.puddleColor : appearance.waterColor,
+    roughness: puddle ? appearance.puddleRoughness : appearance.waterRoughness,
+    metalness: 0,
+    transparent: true,
+    opacity: puddle ? appearance.puddleOpacity : appearance.waterOpacity,
+    depthWrite: false,
+    alphaTest: surface && !puddle ? 0.02 : 0,
+    side: DoubleSide,
+    forceSinglePass: true,
+    vertexColors: surface,
+    envMap: reflection,
+    envMapIntensity: 0.45,
+  };
+  // Thin sheets share the room's baked reflection; only the cup liquid refracts.
+  return volume ? (
     <meshPhysicalMaterial
-      color={
-        puddle
-          ? spillSettings.appearance.puddleColor
-          : spillSettings.appearance.waterColor
-      }
-      roughness={
-        puddle
-          ? spillSettings.appearance.puddleRoughness
-          : spillSettings.appearance.waterRoughness
-      }
-      metalness={0}
-      transmission={
-        puddle
-          ? spillSettings.appearance.puddleTransmission
-          : spillSettings.appearance.waterTransmission
-      }
-      thickness={puddle ? spillSettings.appearance.puddleThickness : 0.018}
+      {...material}
+      transmission={appearance.waterTransmission}
+      thickness={0.012}
       ior={1.333}
-      transparent
-      opacity={
-        puddle
-          ? spillSettings.appearance.puddleOpacity
-          : spillSettings.appearance.waterOpacity
-      }
-      depthWrite={false}
-      alphaTest={surface && !puddle ? 0.02 : 0}
-      clearcoat={puddle ? spillSettings.appearance.puddleClearcoat : 1}
-      clearcoatRoughness={
-        puddle ? spillSettings.appearance.puddleClearcoatRoughness : 0
-      }
-      side={DoubleSide}
-      vertexColors={surface}
     />
+  ) : (
+    <meshStandardMaterial {...material} />
   );
 }

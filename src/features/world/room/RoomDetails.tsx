@@ -1,10 +1,10 @@
-import { FinishedBox as Box } from '../FinishedBox';
+import { FinishedBox as Box } from '../surfaces/FinishedBox';
 import { EntryDoor, SideWindow } from './RoomOpenings';
 import { Armchair, WovenChair } from './Seating';
-import { EntryPorch } from '../EntryPorch';
-import { LivedInDetails } from '../LivedInDetails';
-import { DetailedPlant, TelevisionLamp } from '../RoomBotanicalDetails';
-import { LampSideTable } from '../ShelfKeepsakes';
+import { EntryPorch } from '../exterior/EntryPorch';
+import { LivedInDetails } from './details/LivedInDetails';
+import { DetailedPlant, TelevisionLamp } from './details/RoomBotanicalDetails';
+import { LampSideTable } from './details/ShelfKeepsakes';
 
 export function RoomDetails() {
   return (

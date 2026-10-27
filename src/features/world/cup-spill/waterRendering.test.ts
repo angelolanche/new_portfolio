@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
-  InstancedMesh,
   Mesh,
-  Object3D,
-  SphereGeometry,
   MeshBasicMaterial,
+  BufferAttribute,
+  Frustum,
+  Matrix4,
+  PerspectiveCamera,
+  Vector3,
 } from 'three';
+import { sampleOpening } from '../opening/cameraPath';
 import { TableWaterSimulation } from './tableWater';
 import { impactTime, glassContactTime, sampleSpillMotion } from './spillMotion';
 import {
@@ -16,19 +19,93 @@ import {
   createPouringWaterGeometry,
   updatePouringWaterMesh,
 } from './pouringWaterMesh';
-import { updateFallingDroplets } from './fallingDroplets';
 import {
   createEdgeCascadeGeometry,
   updateEdgeCascadeMesh,
 } from './edgeCascadeMesh';
 import { spillDuration } from './spillMotion';
-import { glassPosition, tableRadius } from '../sceneLayout';
+import { glassPosition, tableRadius, tablePosition } from '../room/sceneLayout';
 import { getGridCellPosition, waterGrid } from './waterGrid';
 import { initialWaterVolume } from './cupWaterVolume';
 import { sampleWaterRelease } from './waterRelease';
-import { spillSettings } from './spillSettings';
 
 describe('water rendering across the shared timeline', () => {
+  it('uploads only active surface data and keeps animated bounds valid through replay and offscreen culling', () => {
+    const simulation = new TableWaterSimulation();
+    const surface = createTabletopWaterGeometry();
+    const stream = createPouringWaterGeometry();
+    const cascade = createEdgeCascadeGeometry();
+    const material = new MeshBasicMaterial();
+    const streamMesh = new Mesh(stream, material);
+    const meshes = [
+      new Mesh(surface, material),
+      streamMesh,
+      new Mesh(cascade, material),
+    ];
+    const point = new Vector3();
+    for (const time of [0, 2.2, 3.1, 4, 6, 9, 10.9, 0]) {
+      simulation.advance(time);
+      updateTabletopWaterMesh(surface, simulation);
+      updatePouringWaterMesh(
+        stream,
+        streamMesh,
+        simulation,
+        sampleSpillMotion(simulation.time),
+      );
+      updateEdgeCascadeMesh(cascade, simulation);
+      let uploaded = 0;
+      let capacity = 0;
+      for (const attribute of [
+        surface.getIndex()!,
+        ...Object.values(surface.attributes),
+      ] as BufferAttribute[]) {
+        capacity += attribute.array.byteLength;
+        for (const range of attribute.updateRanges)
+          uploaded += range.count * attribute.array.BYTES_PER_ELEMENT;
+      }
+      expect(uploaded).toBeLessThan(capacity * 0.1);
+      const index = surface.getIndex()!;
+      for (let i = 0; i < surface.drawRange.count; i++)
+        expect(index.getX(i) * 3).toBeLessThan(
+          (surface.getAttribute('position') as BufferAttribute).updateRanges[0]
+            .count,
+        );
+      for (const geometry of [surface, stream, cascade]) {
+        const position = geometry.getAttribute('position');
+        const count =
+          geometry === surface ? surface.drawRange.count : position.count;
+        for (let i = 0; i < count; i++) {
+          const vertex = geometry === surface ? index.getX(i) : i;
+          point.fromBufferAttribute(position, vertex);
+          expect(geometry.boundingSphere!.distanceToPoint(point)).toBeLessThan(
+            1e-5,
+          );
+        }
+      }
+      if (time === 10.9) {
+        for (const aspect of [16 / 9, 390 / 730]) {
+          const pose = sampleOpening(time, aspect);
+          const camera = new PerspectiveCamera(pose.fov, aspect, 0.03, 400);
+          camera.position.copy(pose.position);
+          camera.lookAt(pose.target);
+          camera.updateMatrixWorld();
+          const frustum = new Frustum().setFromProjectionMatrix(
+            new Matrix4().multiplyMatrices(
+              camera.projectionMatrix,
+              camera.matrixWorldInverse,
+            ),
+          );
+          for (const mesh of meshes) {
+            mesh.position.set(...tablePosition);
+            mesh.updateMatrixWorld();
+            expect(frustum.intersectsObject(mesh)).toBe(false);
+          }
+        }
+      }
+    }
+    for (const geometry of [surface, stream, cascade]) geometry.dispose();
+    material.dispose();
+  });
   it('reveals the spill after tipping and clears the visible water on replay', () => {
     const simulation = new TableWaterSimulation();
     const surface = createTabletopWaterGeometry();
@@ -161,49 +238,6 @@ describe('water rendering across the shared timeline', () => {
     expect(rimVertices).toBeGreaterThan(0);
     expect(simulation.surfaceVolume).toBe(before);
     surface.dispose();
-  });
-  it('reserves sparse detached tips for below the sheet instead of a shower at the lip', () => {
-    const simulation = new TableWaterSimulation();
-    const geometry = new SphereGeometry(1, 8, 6),
-      material = new MeshBasicMaterial();
-    const droplets = new InstancedMesh(
-      geometry,
-      material,
-      spillSettings.droplets.maximumVisibleCount,
-    );
-    const transform = new Object3D();
-    simulation.time = 10;
-    for (let i = 0; i < 100; i++)
-      simulation.droplets.push({
-        x: -0.82,
-        y: 0.845,
-        z: i * 0.002,
-        velocityX: -0.1,
-        velocityY: -0.04,
-        velocityZ: 0,
-        volume: 1e-6,
-        birthTime: 9.9,
-      });
-    updateFallingDroplets(droplets, transform, simulation);
-    expect(droplets.count).toBe(0);
-    for (let i = 0; i < simulation.droplets.length; i++)
-      simulation.droplets[i].birthTime = 9.6 + i * 0.0005;
-    updateFallingDroplets(droplets, transform, simulation);
-    expect(droplets.count).toBeGreaterThan(0);
-    expect(droplets.count).toBeLessThan(40);
-    for (let i = 0; i < droplets.count; i++) {
-      droplets.getMatrixAt(i, transform.matrix);
-      transform.matrix.decompose(
-        transform.position,
-        transform.quaternion,
-        transform.scale,
-      );
-      expect(transform.position.y).toBeLessThan(0.7);
-      expect(transform.scale.y).toBeGreaterThan(transform.scale.x * 2);
-    }
-    droplets.dispose();
-    geometry.dispose();
-    material.dispose();
   });
   it('narrows and shortens the cascade as the rim flow decreases, then clears it', () => {
     const geometry = createEdgeCascadeGeometry();
@@ -350,25 +384,5 @@ describe('water rendering across the shared timeline', () => {
     cascade.dispose();
     mesh.geometry.dispose();
     (mesh.material as MeshBasicMaterial).dispose();
-  });
-  it('removes falling droplets from the rendered instances after replay', () => {
-    const simulation = new TableWaterSimulation();
-    const geometry = new SphereGeometry(1, 8, 6);
-    const material = new MeshBasicMaterial();
-    const droplets = new InstancedMesh(
-      geometry,
-      material,
-      spillSettings.droplets.maximumVisibleCount,
-    );
-    const transform = new Object3D();
-    simulation.advance(glassContactTime + 0.7);
-    updateFallingDroplets(droplets, transform, simulation);
-    expect(droplets.count).toBeGreaterThan(0);
-    simulation.advance(0);
-    updateFallingDroplets(droplets, transform, simulation);
-    expect(droplets.count).toBe(0);
-    droplets.dispose();
-    geometry.dispose();
-    material.dispose();
   });
 });
