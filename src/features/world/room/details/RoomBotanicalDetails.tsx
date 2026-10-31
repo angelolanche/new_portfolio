@@ -8,6 +8,21 @@ import {
 } from 'three';
 import { RoomMaterial } from '../../surfaces/RoomSurfaces';
 
+const lampBaseProfile = [
+  [0, 0.74],
+  [0.19, 0.74],
+  [0.22, 0.76],
+  [0.22, 0.79],
+  [0.18, 0.82],
+  [0.1, 0.84],
+  [0.075, 0.87],
+  [0.09, 0.94],
+  [0.105, 1.01],
+  [0.08, 1.09],
+  [0.045, 1.14],
+  [0.04, 1.22],
+].map(([radius, height]) => new Vector2(radius, height));
+
 function leafGeometry() {
   const geometry = new BufferGeometry();
   const positions: number[] = [],
@@ -137,24 +152,10 @@ function pleatedShade() {
 export function TelevisionLamp() {
   const [shade] = useState(pleatedShade);
   useEffect(() => () => shade.dispose(), [shade]);
-  const profile = [
-    [0, 0.74],
-    [0.19, 0.74],
-    [0.22, 0.76],
-    [0.22, 0.79],
-    [0.18, 0.82],
-    [0.1, 0.84],
-    [0.075, 0.87],
-    [0.09, 0.94],
-    [0.105, 1.01],
-    [0.08, 1.09],
-    [0.045, 1.14],
-    [0.04, 1.22],
-  ].map(([r, y]) => new Vector2(r, y));
   return (
     <group>
       <mesh castShadow receiveShadow>
-        <latheGeometry args={[profile, 48]} />
+        <latheGeometry args={[lampBaseProfile, 48]} />
         <meshStandardMaterial
           color="#97703e"
           metalness={0.58}

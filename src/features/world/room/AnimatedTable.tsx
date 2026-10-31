@@ -10,6 +10,17 @@ import { PhoneCord, TableFinish } from './details/RoomFinishDetails';
 import { PhoneDetails, TableLamp } from './details/TabletopDetails';
 import { openingDuration } from '../opening/cameraPath';
 
+const tableStemProfile = [
+  [0.14, -0.37],
+  [0.16, -0.32],
+  [0.14, -0.27],
+  [0.08, -0.2],
+  [0.075, 0.15],
+  [0.11, 0.24],
+  [0.14, 0.3],
+  [0.14, 0.37],
+].map(([radius, height]) => new Vector2(radius, height));
+
 export function AnimatedTable({
   elapsedRef,
 }: {
@@ -23,7 +34,7 @@ export function AnimatedTable({
     lastTime.current = time;
     if (tableRef.current)
       tableRef.current.position.x =
-        tablePosition[0] + sampleSpillMotion(elapsedRef.current).jolt;
+        tablePosition[0] + sampleSpillMotion(time).jolt;
   });
 
   return (
@@ -33,21 +44,7 @@ export function AnimatedTable({
         <RoomMaterial color="#8d6343" />
       </mesh>
       <mesh position={[0, 0.39, 0]} castShadow>
-        <latheGeometry
-          args={[
-            [
-              [0.14, -0.37],
-              [0.16, -0.32],
-              [0.14, -0.27],
-              [0.08, -0.2],
-              [0.075, 0.15],
-              [0.11, 0.24],
-              [0.14, 0.3],
-              [0.14, 0.37],
-            ].map(([r, y]) => new Vector2(r, y)),
-            24,
-          ]}
-        />
+        <latheGeometry args={[tableStemProfile, 24]} />
         <RoomMaterial color="#493020" />
       </mesh>
       <Box position={[0, 0.07, 0]} size={[1.1, 0.1, 0.15]} color="#493020" />
