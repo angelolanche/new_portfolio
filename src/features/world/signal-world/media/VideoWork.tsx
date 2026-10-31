@@ -8,9 +8,12 @@ import {
   Group,
   Vector3,
 } from 'three';
-import type { Project } from '../../../../content/projects';
+import {
+  projects,
+  signalVideoFor,
+  type Project,
+} from '../../../../content/projects';
 import type { SignalNavigation } from '../navigation/signalNavigation';
-import { projects } from '../../../../content/projects';
 import { sampleFloat, videoFloatAmplitude } from '../signalFloat';
 import { projectBlockDepth } from '../signalLayout';
 import { createVideoBlockGeometry } from './videoBlockGeometry';
@@ -33,7 +36,7 @@ export function VideoWork({
   const videoGroupRef = useRef<Group>(null);
   const floatPosition = useRef(new Vector3());
   const floatRotation = useRef(new Vector3());
-  const primaryVideo = project.videos[0];
+  const primaryVideo = signalVideoFor(project);
   const projectIndex = projects.indexOf(project);
   const height = 5.5;
   const width = (height * primaryVideo.width) / primaryVideo.height;

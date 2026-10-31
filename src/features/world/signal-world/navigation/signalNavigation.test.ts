@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PerspectiveCamera, Vector3 } from 'three';
-import { projects } from '../../../../content/projects';
+import { projects, signalVideoFor } from '../../../../content/projects';
 import { signalSunPosition } from '../signalLayout';
 import {
   advanceSignal,
@@ -117,6 +117,27 @@ describe('signal travel', () => {
     );
     expect(quadrants.size).toBeGreaterThanOrEqual(4);
     expect(signalCameraOffset(2, new Vector3())).toEqual(end);
+  });
+
+  it('keeps later work blocks clear of the route from the title to the first work', () => {
+    const first = projects[0];
+    for (let step = 0; step <= 24; step++) {
+      const progress = (first.progress * step) / 24;
+      const cameraPosition = signalCameraOffset(progress, new Vector3()).add(
+        new Vector3(0, 0, -1.5),
+      );
+      for (const project of projects.slice(1)) {
+        const video = signalVideoFor(project);
+        const blockRadius =
+          (Math.hypot((5.5 * video.width) / video.height, 5.5) *
+            project.scale) /
+          2;
+        expect(
+          cameraPosition.distanceTo(new Vector3(...project.position)),
+          `${project.title} intersects the entrance route at ${progress}`,
+        ).toBeGreaterThan(blockRadius + 2);
+      }
+    }
   });
 
   it('uses immediate bounded navigation for reduced motion', () => {

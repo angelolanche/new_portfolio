@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, type RefObject } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { DoubleSide, Group, Vector3 } from 'three';
-import { projects } from '../../../../content/projects';
+import { projects, signalVideoFor } from '../../../../content/projects';
 import type { SignalNavigation } from '../navigation/signalNavigation';
 import { VideoWork } from '../media/VideoWork';
 import { createSignalThreads } from './signalThreads';
@@ -29,7 +29,8 @@ const signalForms = Array.from({ length: 146 }, (_, formIndex) => {
       const overlaps = projects.some((project, index) => {
         const filmRadius =
           (Math.hypot(
-            (5.5 * project.videos[0].width) / project.videos[0].height,
+            (5.5 * signalVideoFor(project).width) /
+              signalVideoFor(project).height,
             5.5,
             projectBlockDepth(index) * 2,
           ) *

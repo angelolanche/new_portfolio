@@ -6,7 +6,7 @@ import {
   Vector3,
 } from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { projects } from '../../../../content/projects';
+import { projects, signalVideoFor } from '../../../../content/projects';
 import {
   signalCenterZ,
   signalSunPosition,
@@ -20,7 +20,7 @@ const exclusions = [
     center: new Vector3(...p.position),
     radius:
       (Math.hypot(
-        (5.5 * p.videos[0].width) / p.videos[0].height,
+        (5.5 * signalVideoFor(p).width) / signalVideoFor(p).height,
         5.5,
         projectBlockDepth(i) * 2,
       ) *
@@ -87,7 +87,9 @@ export function createSignalThreads() {
     new CatmullRomCurve3([
       new Vector3(0, -1.3, -3),
       new Vector3(4, -2, -16),
-      ...projects.map((p) => new Vector3(...p.position)),
+      ...projects
+        .filter((p) => p.slug !== 'desespero-tropical')
+        .map((p) => new Vector3(...p.position)),
       new Vector3(...signalSunPosition),
     ]),
   ];

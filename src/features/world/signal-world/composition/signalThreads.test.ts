@@ -2,7 +2,7 @@ import { expect, it } from 'vitest';
 import { PerspectiveCamera, Vector3 } from 'three';
 import { signalCameraOffset } from '../navigation/signalNavigation';
 import { sunInstructionPitch } from './sunInstructionLayout';
-import { projects } from '../../../../content/projects';
+import { projects, signalVideoFor } from '../../../../content/projects';
 import {
   projectBlockDepth,
   signalSunPosition,
@@ -38,7 +38,7 @@ it('keeps all 27 rendered threads clear of every video and exposes the first lea
       for (const [index, p] of projects.entries()) {
         const radius =
           (Math.hypot(
-            (5.5 * p.videos[0].width) / p.videos[0].height,
+            (5.5 * signalVideoFor(p).width) / signalVideoFor(p).height,
             5.5,
             projectBlockDepth(index) * 2,
           ) *

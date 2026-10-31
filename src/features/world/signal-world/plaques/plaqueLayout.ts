@@ -5,7 +5,7 @@ import {
   type Group,
   type PerspectiveCamera,
 } from 'three';
-import { projects } from '../../../../content/projects';
+import { projects, signalVideoFor } from '../../../../content/projects';
 import { projectBlockDepth } from '../signalLayout';
 import { sampleFloat, videoFloatAmplitude } from '../signalFloat';
 import { choosePlaquePlacement, type ScreenRectangle } from './plaquePlacement';
@@ -113,7 +113,9 @@ export function createPlaqueLayout() {
         .z;
       if (depth <= camera.near || depth >= camera.far) return;
       const halfWidth =
-        (5.5 * project.videos[0].width) / project.videos[0].height / 2;
+        (5.5 * signalVideoFor(project).width) /
+        signalVideoFor(project).height /
+        2;
       const bounds = {
         left: Infinity,
         right: -Infinity,
