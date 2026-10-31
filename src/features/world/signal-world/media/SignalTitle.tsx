@@ -37,6 +37,8 @@ export function SignalTitle({
     const reducedMotion = navigationRef.current.reducedMotion;
     const posterDone = trackSceneAsset();
     const videoDone = reducedMotion ? () => {} : trackSceneAsset();
+    let posterReady = false;
+    let videoFinished = false;
     const video = takePreparedVideo('/media/aosol-title.mp4');
     video.muted = true;
     video.loop = true;
@@ -45,6 +47,7 @@ export function SignalTitle({
     const poster = new TextureLoader().load(
       '/media/aosol-title-poster.png',
       (texture) => {
+        posterReady = true;
         posterDone();
         if (!active) return;
         texture.colorSpace = SRGBColorSpace;
@@ -54,22 +57,37 @@ export function SignalTitle({
         }
       },
       undefined,
-      posterDone,
+      () => {
+        posterDone();
+        if (!active) return;
+        // Keep a failed poster request from turning the title into a black quad.
+        face.material.map = null;
+        face.material.needsUpdate = true;
+      },
     );
     const texture = new VideoTexture(video);
     texture.colorSpace = SRGBColorSpace;
     const showVideo = () => {
       if (!active) return;
+      videoFinished = true;
+      window.clearTimeout(videoTimeout);
       videoDone();
       texture.needsUpdate = true;
       face.material.map = texture;
       face.material.needsUpdate = true;
     };
     const showPoster = () => {
+      videoFinished = true;
+      window.clearTimeout(videoTimeout);
       videoDone();
-      face.material.map = poster;
+      // Use the poster only after it has loaded; otherwise the untextured
+      // basic material is a clean white title face.
+      face.material.map = posterReady ? poster : null;
       face.material.needsUpdate = true;
     };
+    const videoTimeout = window.setTimeout(() => {
+      if (!videoFinished) showPoster();
+    }, 10000);
     video.addEventListener('loadeddata', showVideo);
     video.addEventListener('error', showPoster);
     if (!reducedMotion && !video.hasAttribute('src'))
@@ -84,6 +102,7 @@ export function SignalTitle({
       playbackRef.current = null;
       video.removeEventListener('loadeddata', showVideo);
       video.removeEventListener('error', showPoster);
+      window.clearTimeout(videoTimeout);
       playback.dispose();
       texture.dispose();
       poster.dispose();
