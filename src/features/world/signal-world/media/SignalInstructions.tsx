@@ -2,6 +2,7 @@ import type { RefObject } from 'react';
 import {
   signalInstructions,
   touchSignalInstructions,
+  signalInstructionLayout,
 } from './signalInstructionTexture';
 import { FloatingInstructionBlock } from './FloatingInstructionBlock';
 
@@ -10,27 +11,23 @@ export function SignalInstructions({
 }: {
   clockRef: RefObject<number>;
 }) {
-  const instructions = window.matchMedia?.(
-    '(pointer: coarse) and (max-width: 900px)',
-  ).matches
+  const touchDevice = Boolean(
+    window.matchMedia?.('(pointer: coarse) and (max-width: 900px)').matches,
+  );
+  const instructions = touchDevice
     ? touchSignalInstructions
     : signalInstructions;
+  const layout = signalInstructionLayout(touchDevice);
   return (
     <group>
       {instructions.map((text, i) => (
         <FloatingInstructionBlock
           key={text}
           text={text}
-          width={[3.3, 3.95, 3][i]}
-          height={0.48}
-          position={
-            [
-              [-1.475, -1.565, 0.002],
-              [-0.075, -2.165, 0.002],
-              [-1.375, -3.24, 0.002],
-            ][i] as [number, number, number]
-          }
-          tilt={([4, -3, 3][i] * Math.PI) / 180}
+          width={layout[i].width}
+          height={layout[i].height}
+          position={layout[i].position}
+          tilt={layout[i].tilt}
           seed={220 + i}
           clockRef={clockRef}
         />

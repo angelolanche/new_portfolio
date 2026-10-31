@@ -4,6 +4,7 @@ import {
   instructionWidth,
   instructionHeight,
   instructionY,
+  signalInstructionLayout,
 } from './signalInstructionTexture';
 import { signalTitleScale, titleHeight, titleWidth } from './signalTitleLayout';
 
@@ -33,4 +34,19 @@ it('keeps instructions below the larger title and inside the entry view on wide 
         expect(Math.abs(corner.y)).toBeLessThan(1);
       }
   }
+});
+
+it('makes touch instructions larger and closer to the viewer without changing desktop layout', () => {
+  const desktop = signalInstructionLayout(false);
+  const mobile = signalInstructionLayout(true);
+  expect(desktop.map(({ width, height }) => [width, height])).toEqual([
+    [3.3, 0.48],
+    [3.95, 0.48],
+    [3, 0.48],
+  ]);
+  mobile.forEach((block, index) => {
+    expect(block.width).toBeGreaterThan(desktop[index].width);
+    expect(block.height).toBeGreaterThan(desktop[index].height);
+    expect(block.position[2]).toBeGreaterThan(desktop[index].position[2]);
+  });
 });
