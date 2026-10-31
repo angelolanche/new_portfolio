@@ -182,6 +182,7 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
           About
         </button>
       </div>
+      <small className="site-credit">Design &amp; development · Angelo Aosol © 2026</small>
       <dialog
         ref={indexDialog}
         className="work-index"
