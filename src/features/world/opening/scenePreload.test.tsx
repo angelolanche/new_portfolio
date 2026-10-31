@@ -87,15 +87,21 @@ it('replaces the initial HTML loader and exposes live accessible progress', asyn
   expect(document.getElementById('boot-loader')).toBeNull();
   expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0');
   act(() => preload.reportLoading(85));
-  expect(screen.getByText('85%')).toBeVisible();
+  expect(screen.getByText('loading...')).toBeVisible();
+  expect(screen.getByRole('progressbar').parentElement).toHaveStyle({
+    '--load': '85%',
+  });
   act(() => vi.advanceTimersByTime(5000));
-  expect(screen.getByText('85%')).toBeVisible();
+  expect(screen.getByText('loading...')).toBeVisible();
   expect(screen.getByRole('progressbar')).toHaveAttribute(
     'aria-valuenow',
     '85',
   );
   act(() => preload.reportLoading(100));
-  expect(screen.getByText('100%')).toBeVisible();
+  expect(screen.getByRole('progressbar')).toHaveAttribute(
+    'aria-valuenow',
+    '100',
+  );
 });
 
 it('tracks outstanding scene assets and resolves each only once', async () => {

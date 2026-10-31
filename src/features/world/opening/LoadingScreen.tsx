@@ -18,11 +18,25 @@ export function LoadingScreen({ exiting = false }: { exiting?: boolean }) {
       className={`scene-loading${exiting ? ' is-leaving' : ''}`}
       style={{ '--load': `${progress}%` } as CSSProperties}
     >
-      <div className="loading-tv" aria-hidden="true">
-        <div className="loading-screen">
-          <div className="loading-fluid" />
+      <div className="loading-art" aria-hidden="true">
+        <img
+          className="loading-tether"
+          src="/media/loading-tether.svg"
+          alt=""
+        />
+        <div className="loading-sun">
+          <img src="/favicon.svg" alt="" />
         </div>
-        <i />
+        <div className="loading-television">
+          <div className="loading-screen">
+            <div className="loading-fluid" />
+          </div>
+          <img
+            className="loading-tv"
+            src="/media/loading-tv-sketch.jpg"
+            alt=""
+          />
+        </div>
       </div>
       <div
         role="progressbar"
@@ -31,11 +45,7 @@ export function LoadingScreen({ exiting = false }: { exiting?: boolean }) {
         aria-valuemax={100}
         aria-valuenow={progress}
       >
-        <span className="loading-percent">{progress}%</span>
-        <span className="loading-caption">
-          The percentage reaches 100% sooner than it should, but by the time you
-          realize it, it doesn’t matter anymore.
-        </span>
+        <span className="loading-caption">loading...</span>
       </div>
     </div>
   );

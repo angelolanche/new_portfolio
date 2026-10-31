@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 340">
+  <defs><pattern id="twist" width="6" height="6" patternUnits="userSpaceOnUse"><path d="m-2 1 5 6m3-7 5 6" stroke="#eee" stroke-width="1"/></pattern></defs>
+  <path id="line" d="M254 276 C305 321 384 286 378 219 C377 172 410 136 422 100" fill="none"/>
+  <use href="#line" stroke="#eee" stroke-width="8" stroke-linecap="round"/>
+  <use href="#line" stroke="#000" stroke-width="5.3" stroke-linecap="round"/>
+  <use href="#line" stroke="url(#twist)" stroke-width="5.3" stroke-linecap="round"/>
+</svg>
