@@ -113,6 +113,10 @@
 .project-detail .detail-top {
   border-bottom: 1px solid #ed191c;
   padding-bottom: 16px;
+  font-size: 12.5px;
+}
+.project-detail .detail-top button {
+  font-size: 12.5px;
 }
 .project-detail article {
   margin: 6vh auto 8vh;
@@ -132,10 +136,33 @@
   padding: 8px 12px;
   max-width: 100%;
   line-height: 1.5;
+  font-size: 12px;
+}
+.project-editorial {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
+  align-items: start;
+  gap: clamp(36px, 5vw, 88px);
+}
+.project-copy {
+  position: sticky;
+  top: 28px;
+  border-top: 2px solid #ed191c;
+  padding-top: 18px;
+}
+.project-copy-label {
+  font:
+    13px 'Courier New',
+    monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #f46a6a;
+  margin: 0 0 28px;
 }
 .project-films {
   display: grid;
-  gap: 56px;
+  gap: clamp(36px, 5vw, 72px);
+  min-width: 0;
 }
 .project-films figure {
   margin: 0;
@@ -145,15 +172,27 @@
 .project-films video {
   display: block;
   width: 100%;
-  height: min(68svh, 760px);
+  height: min(62svh, 680px);
   object-fit: contain;
   background: #050505c4;
+}
+.project-image {
+  display: block;
+  max-width: 100%;
+  max-height: 68svh;
+  object-fit: contain;
+}
+.project-critical-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 .project-films figcaption {
   display: flex;
   justify-content: space-between;
   gap: 16px;
   margin-top: 12px;
+  line-height: 1.5;
   font:
     10px 'Courier New',
     monospace;
@@ -169,6 +208,59 @@
   font:
     11px 'Courier New',
     monospace;
+}
+.about-content {
+  position: relative;
+  min-height: 100%;
+}
+.about-threads {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.5;
+  z-index: 0;
+}
+.about-threads path {
+  fill: none;
+  stroke: #ed191c;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 5px #ed191c);
+}
+.about-detail .detail-top,
+.about-detail article {
+  position: relative;
+  z-index: 1;
+}
+.about-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  align-items: start;
+  gap: clamp(24px, 5vw, 80px);
+}
+.about-media {
+  position: sticky;
+  top: 24px;
+  margin: 0;
+  border-top: 2px solid #ed191c;
+  padding-top: 14px;
+}
+.about-media video {
+  display: block;
+  width: 100%;
+  max-height: 72svh;
+  aspect-ratio: 9 / 16;
+  object-fit: contain;
+  background: #050505;
+}
+.about-media figcaption {
+  margin-top: 12px;
+  font:
+    10px 'Courier New',
+    monospace;
+  text-transform: uppercase;
 }
 .about-copy {
   max-width: 740px;
@@ -192,9 +284,33 @@
   }
 }
 .project-description {
-  font-size: clamp(20px, 2.5vw, 32px);
-  max-width: 600px;
-  line-height: 1.4;
+  font-size: clamp(16px, 1.45vw, 20px);
+  max-width: 540px;
+  line-height: 1.5;
+}
+.project-description p {
+  white-space: pre-line;
+  margin: 0 0 1.2em;
+}
+.project-criticism {
+  border-left: 2px solid #ed191c;
+  padding: 4px 0 4px 20px;
+  margin: 38px 0 0;
+  max-width: 540px;
+  font-size: 16px;
+  line-height: 1.55;
+}
+.project-criticism h3 {
+  margin: 0 0 12px;
+  font:
+    11px 'Courier New',
+    monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #f46a6a;
+}
+.project-criticism p {
+  margin: 0 0 12px;
 }
 .project-pending {
   font:
@@ -254,6 +370,27 @@
   margin-bottom: 8px;
 }
 @media (max-width: 700px) {
+  .about-layout {
+    display: block;
+  }
+  .about-media {
+    position: static;
+    max-width: 360px;
+    margin-bottom: 32px;
+  }
+  .about-media video {
+    max-height: 56svh;
+  }
+  .project-editorial {
+    display: block;
+  }
+  .project-copy {
+    position: static;
+    margin-bottom: 36px;
+  }
+  .project-films video {
+    height: min(62svh, 600px);
+  }
   .signal-access {
     top: 16px;
     right: 16px;
@@ -265,6 +402,16 @@
   .detail-top {
     gap: 14px;
     font-size: 9px;
+  }
+  .project-detail .detail-top,
+  .project-detail .detail-top button {
+    font-size: 10px;
+  }
+  .project-detail .signal-eyebrow {
+    font-size: 11px;
+  }
+  .project-detail .project-copy-label {
+    font-size: 12px;
   }
   .index-row button {
     padding: 8px;
