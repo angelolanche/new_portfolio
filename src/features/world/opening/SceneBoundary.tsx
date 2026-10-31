@@ -11,7 +11,7 @@ export class SceneBoundary extends Component<
   render() {
     return this.state.failed ? (
       <p className="fallback" role="status">
-        The 3D study could not load. This portfolio is in development.
+        The 3D scene could not load. Use Work index or About to explore the portfolio.
       </p>
     ) : (
       this.props.children
