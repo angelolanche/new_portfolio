@@ -118,6 +118,17 @@ describe('Opening routes', () => {
     expect(
       within(about).getByRole('link', { name: 'angelo.pjsol@gmail.com ↗' }),
     ).toHaveAttribute('href', 'mailto:angelo.pjsol@gmail.com');
+    const contactLinks = within(about)
+      .getAllByRole('link')
+      .filter((link) => link.closest('.about-contact'));
+    expect(contactLinks.map((link) => link.textContent?.trim())).toEqual([
+      'angelo.pjsol@gmail.com ↗',
+      '@angeloaosol ↗',
+    ]);
+    expect(contactLinks[1]).toHaveAttribute(
+      'href',
+      'https://www.instagram.com/angeloaosol/',
+    );
     expect(canvas.props?.suspended).toBe(true);
     fireEvent(about, new Event('cancel', { bubbles: true, cancelable: true }));
     expect(window.location.pathname).toBe('/');

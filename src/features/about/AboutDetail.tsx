@@ -101,9 +101,16 @@ export function AboutDetail({ onClose }: { onClose: () => void }) {
                 ))}
             </div>
           </div>
-          <a className="project-source" href="mailto:angelo.pjsol@gmail.com">
-            angelo.pjsol@gmail.com ↗
-          </a>
+          <div className="about-contact">
+            <a href="mailto:angelo.pjsol@gmail.com">angelo.pjsol@gmail.com ↗</a>
+            <a
+              href="https://www.instagram.com/angeloaosol/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              @angeloaosol ↗
+            </a>
+          </div>
         </article>
       </div>
     </dialog>
