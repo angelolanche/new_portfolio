@@ -49,7 +49,7 @@ export function takePreparedVideo(url: string) {
  * Progress measures completed preparation tasks, not network byte percentage.
  * Failed/slow media falls back to the existing posters without blocking entry.
  */
-export function prepareScene() {
+export function prepareScene(posterOnlyExterior = false) {
   if (preparation) return preparation;
   const reduced = window.matchMedia?.(
     '(prefers-reduced-motion: reduce)',
@@ -59,7 +59,9 @@ export function prepareScene() {
     ['/media/aosol-title-poster.png', false],
     ...(!reduced
       ? [
-          ['/media/exterior/black-hole.mp4', true] as [string, boolean],
+          ...(!posterOnlyExterior
+            ? ([['/media/exterior/black-hole.mp4', true]] as [string, boolean][])
+            : []),
           ['/media/aosol-title.mp4', true] as [string, boolean],
         ]
       : []),

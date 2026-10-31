@@ -28,9 +28,13 @@ vi.mock('three', async (importOriginal) => {
   };
 });
 
-it.each([false, true])(
-  'preserves an opaque unblended exterior and loads only a poster for reduced motion=%s',
-  (reducedMotion) => {
+it.each([
+  { reducedMotion: false, posterOnly: false },
+  { reducedMotion: true, posterOnly: false },
+  { reducedMotion: false, posterOnly: true },
+])(
+  'preserves the exterior render state (reduced motion=$reducedMotion, poster only=$posterOnly)',
+  ({ reducedMotion, posterOnly }) => {
     const video = document.createElement('video');
     let ready = 0;
     Object.defineProperties(video, {
@@ -54,6 +58,7 @@ it.each([false, true])(
       playing: true,
       navigationRef,
       colorDither: true,
+      posterOnly,
     };
     const view = renderHook((props) => RealisticSpace(props), {
       initialProps: props,
@@ -66,15 +71,17 @@ it.each([false, true])(
     const afterRender = () =>
       (view.result.current.props.onAfterRender as () => void)();
     afterRender();
-    expect(props.onReady).toHaveBeenCalledTimes(reducedMotion ? 1 : 0);
+    expect(props.onReady).toHaveBeenCalledTimes(
+      reducedMotion || posterOnly ? 1 : 0,
+    );
     const poster = material.uniforms.image.value as Texture;
     const disposePoster = vi.spyOn(poster, 'dispose');
     const disposeMaterial = vi.spyOn(material, 'dispose');
     harness.frame!();
     expect(material.uniforms.bypassDither.value).toBe(true);
     expect(material.uniforms.videoFrame.value).toBe(false);
-    expect(video.hasAttribute('src')).toBe(!reducedMotion);
-    if (!reducedMotion) {
+    expect(video.hasAttribute('src')).toBe(!reducedMotion && !posterOnly);
+    if (!reducedMotion && !posterOnly) {
       ready = 2;
       video.dispatchEvent(new Event('loadeddata'));
       expect(material.uniforms.image.value).toBeInstanceOf(VideoTexture);

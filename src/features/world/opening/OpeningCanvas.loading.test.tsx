@@ -59,6 +59,7 @@ function setup() {
     elapsedRef: { current: 0 },
     pointerRef: { current: { x: 0, y: 0 } },
     colorDither: false,
+    touchDevice: false,
     navigationRef: {
       current: {
         progress: 0,

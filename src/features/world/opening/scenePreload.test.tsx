@@ -77,6 +77,21 @@ it('does not request videos for reduced motion', async () => {
   await pending;
 });
 
+it('skips the exterior video on touch devices while warming the title video', async () => {
+  const preload = await import('./scenePreload');
+  const pending = preload.prepareScene(true);
+  expect(media).toHaveLength(3);
+  expect(media[0]).toBeInstanceOf(HTMLImageElement);
+  expect(media[1]).toBeInstanceOf(HTMLImageElement);
+  expect(media[2]).toBeInstanceOf(HTMLVideoElement);
+  media.forEach((item) =>
+    item.dispatchEvent(
+      new Event(item instanceof HTMLVideoElement ? 'loadeddata' : 'load'),
+    ),
+  );
+  await pending;
+});
+
 it('replaces the initial HTML loader and exposes live accessible progress', async () => {
   const preload = await import('./scenePreload');
   const { LoadingScreen } = await import('./LoadingScreen');

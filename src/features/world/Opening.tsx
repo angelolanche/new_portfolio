@@ -31,7 +31,11 @@ import { prepareScene, reportLoading } from './opening/scenePreload';
 const OpeningCanvas = lazy(async () => {
   const [module] = await Promise.all([
     import('./opening/OpeningCanvas'),
-    prepareScene(),
+    prepareScene(
+      Boolean(
+        window.matchMedia?.('(pointer: coarse) and (max-width: 900px)').matches,
+      ),
+    ),
   ]);
   reportLoading(85);
   return module;
@@ -177,6 +181,7 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
             elapsedRef={elapsedRef}
             pointerRef={pointerRef}
             colorDither={colorDither}
+            touchDevice={touchDevice}
             navigationRef={navigationRef}
             onEntered={onEntered}
             onProject={openProject}

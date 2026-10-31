@@ -50,6 +50,7 @@ const OpeningCanvas = memo(function OpeningCanvas({
   elapsedRef,
   pointerRef,
   colorDither,
+  touchDevice,
   navigationRef,
   onEntered,
   onProject,
@@ -59,6 +60,7 @@ const OpeningCanvas = memo(function OpeningCanvas({
   elapsedRef: RefObject<number>;
   pointerRef: RefObject<PointerLook>;
   colorDither: boolean;
+  touchDevice: boolean;
   navigationRef: RefObject<SignalNavigation>;
   onEntered: () => void;
   onProject: (project: Project) => void;
@@ -89,7 +91,7 @@ const OpeningCanvas = memo(function OpeningCanvas({
       <Canvas
         shadows
         gl={{ transmissionResolutionScale: 0.75 }}
-        dpr={[1, 1.5]}
+        dpr={touchDevice ? 1 : [1, 1.5]}
         camera={{ fov: 42, near: 0.03, far: 400 }}
         fallback={<CanvasFallback onReady={() => setWarmed(true)} />}
       >
@@ -106,6 +108,7 @@ const OpeningCanvas = memo(function OpeningCanvas({
           playing={playing && ready}
           navigationRef={navigationRef}
           colorDither={colorDither}
+          posterOnly={touchDevice}
         />
         <RoomSurfaces>
           <Room elapsedRef={elapsedRef} />

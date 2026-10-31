@@ -36,12 +36,14 @@ export function RealisticSpace({
   playing,
   navigationRef,
   colorDither,
+  posterOnly = false,
   onReady,
 }: {
   elapsedRef: RefObject<number>;
   playing: boolean;
   navigationRef: RefObject<SignalNavigation>;
   colorDither: boolean;
+  posterOnly?: boolean;
   onReady?: () => void;
 }) {
   const meshRef = useRef<Mesh>(null);
@@ -87,7 +89,8 @@ export function RealisticSpace({
     displayReadyRef.current = false;
     notifiedRef.current = false;
     const reducedMotion = navigationRef.current.reducedMotion;
-    let allowPoster = reducedMotion;
+    const usePoster = reducedMotion || posterOnly;
+    let allowPoster = usePoster;
     let posterReady = false;
     const video = takePreparedVideo('/media/exterior/black-hole.mp4');
     video.muted = true;
@@ -105,7 +108,7 @@ export function RealisticSpace({
       '/media/exterior/black-hole-poster.jpg',
       () => {
         posterReady = true;
-        if (active && (reducedMotion || video.readyState < 2)) showPoster();
+        if (active && (usePoster || video.readyState < 2)) showPoster();
       },
     );
     poster.colorSpace = SRGBColorSpace;
@@ -118,7 +121,7 @@ export function RealisticSpace({
       texture.needsUpdate = true;
       displayReadyRef.current = true;
     };
-    const playback = createExteriorPlayback(video, reducedMotion, showPoster);
+    const playback = createExteriorPlayback(video, usePoster, showPoster);
     playbackRef.current = playback;
     const fail = () => {
       if (!active) return;
@@ -127,7 +130,7 @@ export function RealisticSpace({
       playback.fail();
     };
     video.addEventListener('loadeddata', showVideo);
-    if (video.readyState >= 2) queueMicrotask(showVideo);
+    if (video.readyState >= 2 && !usePoster) queueMicrotask(showVideo);
     video.addEventListener('error', fail);
     if (video.error) queueMicrotask(fail);
     return () => {
@@ -139,7 +142,7 @@ export function RealisticSpace({
       texture.dispose();
       poster.dispose();
     };
-  }, [material, navigationRef]);
+  }, [material, navigationRef, posterOnly]);
   useFrame(() => {
     const time = elapsedRef.current;
     if (meshRef.current) meshRef.current.visible = time < openingDuration;
