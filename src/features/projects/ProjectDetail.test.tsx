@@ -57,10 +57,16 @@ it('shows the Camera Roll poster and only the selected films', () => {
   expect(
     films.map((film) => film.querySelector('source')?.getAttribute('src')),
   ).toEqual([
-    projects[0].videos[0].url,
+    '/media/projects/camera-roll.mp4',
     '/media/projects/camera-roll-lucas-announcement.mp4',
     '/media/projects/camera-roll-dufl-event.mp4',
   ]);
+  expect(films[0]).toHaveAttribute('poster', '/media/projects/camera-roll.jpg');
+  expect(films[0].querySelectorAll('source')).toHaveLength(2);
+  expect(films[0].querySelectorAll('source')[1]).toHaveAttribute(
+    'src',
+    projects[0].videos[0].url,
+  );
 });
 
 it('presents the verified critical reading on AutoRRetrato with its original post', () => {
@@ -189,7 +195,7 @@ it('keeps editorial copy beside media, avoids duplicate video covers and omits s
   ).toHaveLength(1);
   expect(
     screen.getByLabelText('Opening of Gallery 138 — video 2'),
-  ).not.toHaveAttribute('poster');
+  ).toHaveAttribute('poster', '/media/projects/gallery-138.jpg');
 
   rerender(<ProjectDetail project={projects[5]} onClose={() => {}} />);
   expect(

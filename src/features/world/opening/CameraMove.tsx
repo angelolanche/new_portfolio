@@ -41,7 +41,17 @@ export function CameraMove({
   const lookRef = useRef<PointerLook>({ x: 0, y: 0 });
   const weightedPointer = useRef<PointerLook>({ x: 0, y: 0 });
   const aspect = useThree(({ size }) => size.width / size.height);
-  const samplePose = useMemo(() => createOpeningSampler(aspect), [aspect]);
+  const touchDevice = useMemo(
+    () =>
+      Boolean(
+        window.matchMedia?.('(pointer: coarse) and (max-width: 900px)').matches,
+      ),
+    [],
+  );
+  const samplePose = useMemo(
+    () => createOpeningSampler(aspect, touchDevice),
+    [aspect, touchDevice],
+  );
   const previousInspection = useRef<boolean | null>(null);
   const lastPose = useRef<ReturnType<typeof samplePose> | null>(null);
   const lastSample = useRef({ time: -1, sampler: samplePose });
@@ -85,7 +95,10 @@ export function CameraMove({
       const inspecting = navigationRef
         ? isInspectingSignalStop(navigationRef.current)
         : false;
-      const range = sampleLookRange(elapsedRef.current, inspecting);
+      const baseRange = sampleLookRange(elapsedRef.current, inspecting);
+      const recentering =
+        touchDevice && pointerRef.current.x === 0 && pointerRef.current.y === 0;
+      const range = recentering ? { ...baseRange, response: 3.1 } : baseRange;
       // Preserve the viewing angle when leaving a stop despite the wider free range.
       if (
         previousInspection.current === true &&

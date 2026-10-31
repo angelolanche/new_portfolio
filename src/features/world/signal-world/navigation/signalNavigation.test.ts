@@ -9,6 +9,7 @@ import {
   signalTravelDuration,
   signalCameraOffset,
   signalCameraAngles,
+  signalMobileCameraPushIn,
   type SignalNavigation,
 } from './signalNavigation';
 
@@ -20,6 +21,15 @@ const navigation = (): SignalNavigation => ({
 });
 
 describe('signal travel', () => {
+  it('pushes mobile framing closer at the title, works and sun', () => {
+    expect(signalMobileCameraPushIn(0)).toBeGreaterThan(0);
+    for (const project of projects)
+      expect(signalMobileCameraPushIn(project.progress)).toBeGreaterThan(0);
+    expect(signalMobileCameraPushIn(1)).toBeGreaterThan(
+      signalMobileCameraPushIn(projects.at(-1)!.progress),
+    );
+  });
+
   it('accelerates gently, brakes gently and unlocks at the exact end of a finite journey', () => {
     const state: SignalNavigation = {
       ...navigation(),

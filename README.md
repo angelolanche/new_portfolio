@@ -22,7 +22,7 @@ Compact checks overwrite `.logs/<check>.log`. Standard scripts and watch mode re
 
 ## Current experience
 
-Run `npm run dev` to view the opening. At 11.4 seconds, the signal universe takes over the viewport, followed by a 2.2-second entry glide. The title uses the supplied video reference. Wheel, keyboard and touch gestures navigate between works; mouse inspection and keyboard free flight remain available. Work index and About provide HTML access, and project URLs support browser back/forward with navigation-state restoration. The scene runs automatically without pause/replay shortcuts; reduced-motion visitors start inside the signal. Creative details are maintained in BETWEEN_FRAMES_CONTEXT.md; the current source map is in docs/architecture.md.
+Run `npm run dev` to view the opening. At 11.4 seconds, the signal universe takes over the viewport, followed by a 2.2-second entry glide. The title uses the supplied video reference. Desktop wheel and keyboard controls navigate between works; mouse inspection and keyboard free flight remain available. On phones, circular buttons guide travel while touch dragging looks around the room and signal, easing back to center when released. Work index and About provide HTML access, and project URLs support browser back/forward with navigation-state restoration. The scene runs automatically without pause/replay shortcuts; reduced-motion visitors start inside the signal. Creative details are maintained in BETWEEN_FRAMES_CONTEXT.md; the current source map is in docs/architecture.md.
 
 ## Where to edit
 

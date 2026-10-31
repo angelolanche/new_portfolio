@@ -13,10 +13,19 @@ import {
 } from 'three';
 import { projects } from '../../../../content/projects';
 import { TelevisionStatic } from './TelevisionStatic';
-import { createFlight } from '../navigation/signalNavigation';
+import {
+  createFlight,
+  signalCameraOffset,
+  signalMobileCameraPushIn,
+} from '../navigation/signalNavigation';
 import { sampleOpening, openingDuration } from '../../opening/cameraPath';
 import { signalEntryEnd } from '../../opening/timing';
 import { signalCameraAngles } from '../navigation/signalNavigation';
+import {
+  sampleTelevisionEntry,
+  televisionScreenCenter,
+  televisionWorldScale,
+} from './televisionWorld';
 
 const harness = vi.hoisted(() => ({
   callback: null as ((state: unknown, delta: number) => void) | null,
@@ -269,4 +278,71 @@ it('preserves the handoff, eases into each destination and restores free flight 
   expect(() => harness.callback!(state, 1 / 60)).toThrow('GPU render failed');
   expect(gl.setRenderTarget).toHaveBeenLastCalledWith(null);
   expect(gl.autoClear).toBe(true);
+});
+
+it('pushes the mobile signal camera closer to a work and widens its final lens', () => {
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn((query: string) => ({ matches: query.includes('pointer: coarse') })),
+  );
+  try {
+    harness.canvas = document.createElement('canvas');
+    const aspect = 390 / 844;
+    const elapsedRef = { current: openingDuration };
+    const navigationRef = {
+      current: {
+        progress: projects[0].progress,
+        target: projects[0].progress,
+        detailOpen: false,
+        reducedMotion: true,
+        flight: createFlight(),
+      },
+    };
+    renderHook(() =>
+      TelevisionStatic({
+        playing: false,
+        colorDither: false,
+        elapsedRef,
+        navigationRef,
+        onEntered: vi.fn(),
+        onProject: vi.fn(),
+      }),
+    );
+    const camera = new PerspectiveCamera(82, aspect, 0.03, 400);
+    const pose = sampleOpening(openingDuration, aspect, true);
+    camera.position.copy(pose.position);
+    camera.fov = pose.fov;
+    camera.lookAt(pose.target);
+    const gl = {
+      autoClear: true,
+      getDrawingBufferSize: (value: Vector2) => value.set(390, 844),
+      getRenderTarget: () => null,
+      setRenderTarget: vi.fn(),
+      render: vi.fn(),
+    };
+    harness.callback!(
+      { gl, camera, scene: new Scene(), size: { width: 390, height: 844 } },
+      1 / 60,
+    );
+    const worldCamera = gl.render.mock.calls[0][1] as PerspectiveCamera;
+    const basePosition = camera.position
+      .clone()
+      .sub(televisionScreenCenter)
+      .multiplyScalar(televisionWorldScale);
+    const entryDistance = basePosition.z + 1.5;
+    basePosition.z -=
+      sampleTelevisionEntry(openingDuration, entryDistance) * entryDistance;
+    basePosition.add(signalCameraOffset(projects[0].progress, new Vector3()));
+    basePosition.add(
+      new Vector3(
+        0,
+        0,
+        -signalMobileCameraPushIn(projects[0].progress),
+      ).applyQuaternion(worldCamera.quaternion),
+    );
+    expect(worldCamera.position.distanceTo(basePosition)).toBeLessThan(1e-6);
+    expect(worldCamera.fov).toBeGreaterThan(100);
+  } finally {
+    vi.unstubAllGlobals();
+  }
 });

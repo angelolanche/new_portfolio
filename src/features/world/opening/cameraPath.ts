@@ -99,14 +99,14 @@ function easedCoordinate(
 
 // Constants and curve derivatives depend on viewport shape, not animation time.
 // A sampler is owned by the camera and rebuilt only when the aspect changes.
-export function createOpeningSampler(aspect: number) {
+export function createOpeningSampler(aspect: number, touchDevice = false) {
   const portrait = aspect < 1;
   const start = new Vector3(3.05, 1.85, portrait ? 6.05 : 5.3);
   const television = new Vector3(...televisionPosition);
   const startTarget = new Vector3(portrait ? 2.4 : 2.3, 1.25, 2.6);
   const screenCenter = television.clone().add(new Vector3(-0.1, 1.34, 0.372));
   const formerEnd = television.clone().add(new Vector3(-0.1, 1.34, -0.72));
-  const finalFov = portrait ? 54 : 50;
+  const finalFov = touchDevice ? 82 : portrait ? 54 : 50;
   const screenFrontZ = screenCenter.z + 0.022;
   const lensTangent = Math.tan((finalFov * Math.PI) / 360);
   const coverDistance = Math.min(
@@ -223,7 +223,8 @@ export function createOpeningSampler(aspect: number) {
     const acquireScreen = smoothStep(progress / (portrait ? 0.65 : 0.5));
     const target = startTarget.clone().lerp(screenCenter, acquireScreen);
     const movingFov =
-      50 + (portrait ? 4 * progress + 4 * Math.sin(Math.PI * progress) : 0);
+      (touchDevice ? 72 : 50) +
+      (portrait ? 4 * progress + 4 * Math.sin(Math.PI * progress) : 0);
     const settleLens = smoothStep((elapsed - 6.5) / (approachStart - 6.5));
     return {
       position,
@@ -233,6 +234,10 @@ export function createOpeningSampler(aspect: number) {
   };
 }
 
-export function sampleOpening(seconds: number, aspect: number) {
-  return createOpeningSampler(aspect)(seconds);
+export function sampleOpening(
+  seconds: number,
+  aspect: number,
+  touchDevice = false,
+) {
+  return createOpeningSampler(aspect, touchDevice)(seconds);
 }

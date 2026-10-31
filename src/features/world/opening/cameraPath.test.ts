@@ -79,6 +79,13 @@ it('keeps viewport samplers independent and repeatable across backwards seeks', 
   expect(landscape(0)).toEqual(initial);
   expect(portrait(0).position.z).toBeGreaterThan(initial.position.z);
 });
+
+it('uses a wider lens for mobile while preserving the approved desktop field of view', () => {
+  const desktop = sampleOpening(8, 390 / 730).fov;
+  const mobile = sampleOpening(8, 390 / 730, true).fov;
+  expect(desktop).toBeLessThan(60);
+  expect(mobile).toBeGreaterThan(desktop + 20);
+});
 function project(point: Vector3, time: number, aspect: number) {
   const pose = sampleOpening(time, aspect);
   const camera = new PerspectiveCamera(pose.fov, aspect, 0.03, 40);

@@ -79,9 +79,6 @@ export function LoadingScreen({ exiting = false }: { exiting?: boolean }) {
           <span className="loading-caption">loading...</span>
         </div>
       </div>
-      <span className="loading-rotate-prompt">
-        Rotate your phone to landscape
-      </span>
     </div>
   );
 }

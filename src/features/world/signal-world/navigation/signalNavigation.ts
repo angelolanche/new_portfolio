@@ -89,7 +89,7 @@ export function nextWorkProgress(progress: number, direction: number) {
 }
 
 const stops = [
-  { progress: 0, x: 0, y: 0, z: 0, angle: 0, pitch: 0 },
+  { progress: 0, x: 0, y: 0, z: 0, angle: 0, pitch: 0, mobilePushIn: 2.5 },
   ...projects.map((p) => ({
     progress: p.progress,
     x: p.position[0] - Math.sin(p.angle) * projectStandOff,
@@ -97,6 +97,7 @@ const stops = [
     z: p.position[2] + Math.cos(p.angle) * projectStandOff + 1.5,
     angle: p.angle,
     pitch: Math.atan2(p.position[1] * 0.3, projectStandOff),
+    mobilePushIn: 4.2,
   })),
   {
     progress: 1,
@@ -105,6 +106,7 @@ const stops = [
     z: signalSunPosition[2] + 59.5,
     angle: Math.PI * 2,
     pitch: Math.atan2(signalSunPosition[1] * 0.65, 58),
+    mobilePushIn: 26,
   },
 ];
 
@@ -153,6 +155,13 @@ export function signalCameraAngles(progress: number) {
     yaw: -(before.angle + (after.angle - before.angle) * eased),
     pitch: before.pitch + (after.pitch - before.pitch) * eased,
   };
+}
+
+export function signalMobileCameraPushIn(progress: number) {
+  const { before, after, eased } = segment(progress);
+  return (
+    before.mobilePushIn + (after.mobilePushIn - before.mobilePushIn) * eased
+  );
 }
 
 export function signalCameraOffset(progress: number, result: Vector3) {

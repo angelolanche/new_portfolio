@@ -5,6 +5,7 @@ export const signalInstructions = [
 ] as const;
 
 export const touchSignalInstructions = [
+  'Drag to look around',
   'Use < > to navigate',
   'Tap a work to open',
 ] as const;

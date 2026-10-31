@@ -58,24 +58,28 @@ export function useOpeningPointer({
         event.currentTarget.focus({ preventScroll: true });
       if (
         event.pointerType !== 'touch' ||
-        !entered ||
+        (!entered && !touchDevice) ||
         blocked ||
         (event.target instanceof HTMLElement &&
           event.target.closest('button, a, input'))
       )
         return;
-      if (touchDevice) return;
       touchesRef.current.set(event.pointerId, {
         x: event.clientX,
         y: event.clientY,
       });
-      event.currentTarget.setPointerCapture?.(event.pointerId);
+      if (!touchDevice)
+        event.currentTarget.setPointerCapture?.(event.pointerId);
     },
     onPointerUp: (event) => {
       touchesRef.current.delete(event.pointerId);
+      if (touchDevice && touchesRef.current.size === 0)
+        pointerRef.current = { x: 0, y: 0 };
     },
     onPointerCancel: (event) => {
       touchesRef.current.delete(event.pointerId);
+      if (touchDevice && touchesRef.current.size === 0)
+        pointerRef.current = { x: 0, y: 0 };
     },
     onPointerMove: (event) => {
       if (blocked) {
@@ -94,10 +98,35 @@ export function useOpeningPointer({
         return;
       }
       if (event.pointerType === 'touch') {
-        if (touchDevice) return;
         const touch = touchesRef.current.get(event.pointerId);
         if (touch) {
           const width = event.currentTarget.clientWidth || 400;
+          if (touchDevice) {
+            if (touchesRef.current.size === 1) {
+              const height = event.currentTarget.clientHeight || 600;
+              pointerRef.current.x = Math.max(
+                -1,
+                Math.min(
+                  1,
+                  pointerRef.current.x +
+                    ((event.clientX - touch.x) / width) *
+                      pointerLookSensitivity,
+                ),
+              );
+              pointerRef.current.y = Math.max(
+                -1,
+                Math.min(
+                  1,
+                  pointerRef.current.y +
+                    ((event.clientY - touch.y) / height) *
+                      pointerLookSensitivity,
+                ),
+              );
+            }
+            touch.x = event.clientX;
+            touch.y = event.clientY;
+            return;
+          }
           pointerRef.current.x +=
             (((touch.x - event.clientX) / width) * pointerLookSensitivity) /
             touchesRef.current.size;
@@ -189,6 +218,8 @@ export function useOpeningPointer({
       )
         pointerRef.current = { x: 0, y: 0 };
       touchesRef.current.delete(event.pointerId);
+      if (touchDevice && touchesRef.current.size === 0)
+        pointerRef.current = { x: 0, y: 0 };
     },
   };
   return { pointerHandlers, resetPointer };

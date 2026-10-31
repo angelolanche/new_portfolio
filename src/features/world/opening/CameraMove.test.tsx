@@ -172,6 +172,86 @@ it('enters the TV centered without converting the room pointer position into a f
   expect(pointerRef.current.x).toBe(2.5);
 });
 
+it('uses a wider mobile lens and slowly recenters aim after releasing a drag', () => {
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn((query: string) => ({ matches: query.includes('pointer: coarse') })),
+  );
+  try {
+    const elapsedRef = { current: openingDuration + 2 };
+    const pointerRef = { current: { x: 0.45, y: -0.2 } };
+    const camera = new PerspectiveCamera();
+    render(
+      <CameraMove
+        elapsedRef={elapsedRef}
+        pointerRef={pointerRef}
+        playing={false}
+      />,
+    );
+    for (let i = 0; i < 60; i++) frame.callback({ camera }, 1 / 60);
+    const pose = sampleOpening(openingDuration, 16 / 9, true);
+    const neutralCamera = new PerspectiveCamera(pose.fov, 16 / 9, 0.03, 400);
+    neutralCamera.position.copy(pose.position);
+    neutralCamera.lookAt(pose.target);
+    const turnBeforeRelease = camera.quaternion.angleTo(
+      neutralCamera.quaternion,
+    );
+    expect(camera.fov).toBeGreaterThan(
+      sampleOpening(openingDuration, 16 / 9).fov,
+    );
+    pointerRef.current = { x: 0, y: 0 };
+    for (let i = 0; i < 3; i++) frame.callback({ camera }, 1 / 60);
+    const earlyReturn = camera.quaternion.angleTo(neutralCamera.quaternion);
+    expect(earlyReturn).toBeGreaterThan(turnBeforeRelease * 0.7);
+    for (let i = 0; i < 120; i++) frame.callback({ camera }, 1 / 60);
+    expect(camera.quaternion.angleTo(neutralCamera.quaternion)).toBeLessThan(
+      turnBeforeRelease * 0.02,
+    );
+  } finally {
+    vi.unstubAllGlobals();
+  }
+});
+
+it('uses a wider mobile lens and slowly recenters aim after releasing a drag', () => {
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn((query: string) => ({ matches: query.includes('pointer: coarse') })),
+  );
+  try {
+    const elapsedRef = { current: openingDuration + 2 };
+    const pointerRef = { current: { x: 0.45, y: -0.2 } };
+    const camera = new PerspectiveCamera();
+    render(
+      <CameraMove
+        elapsedRef={elapsedRef}
+        pointerRef={pointerRef}
+        playing={false}
+      />,
+    );
+    for (let i = 0; i < 60; i++) frame.callback({ camera }, 1 / 60);
+    const pose = sampleOpening(openingDuration, 16 / 9, true);
+    const neutralCamera = new PerspectiveCamera(pose.fov, 16 / 9, 0.03, 400);
+    neutralCamera.position.copy(pose.position);
+    neutralCamera.lookAt(pose.target);
+    const turnBeforeRelease = camera.quaternion.angleTo(
+      neutralCamera.quaternion,
+    );
+    expect(camera.fov).toBeGreaterThan(
+      sampleOpening(openingDuration, 16 / 9).fov,
+    );
+    pointerRef.current = { x: 0, y: 0 };
+    for (let i = 0; i < 3; i++) frame.callback({ camera }, 1 / 60);
+    const earlyReturn = camera.quaternion.angleTo(neutralCamera.quaternion);
+    expect(earlyReturn).toBeGreaterThan(turnBeforeRelease * 0.7);
+    for (let i = 0; i < 120; i++) frame.callback({ camera }, 1 / 60);
+    expect(camera.quaternion.angleTo(neutralCamera.quaternion)).toBeLessThan(
+      turnBeforeRelease * 0.02,
+    );
+  } finally {
+    vi.unstubAllGlobals();
+  }
+});
+
 it.each([0, ...projects.map((project) => project.progress), 1])(
   'keeps inspection bounded at stop %s, preserves yaw on departure and completes multiple free turns',
   (progress) => {

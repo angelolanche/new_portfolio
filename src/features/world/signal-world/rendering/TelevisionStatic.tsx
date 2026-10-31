@@ -23,6 +23,7 @@ import { sampleFloat, videoFloatAmplitude } from '../signalFloat';
 import {
   advanceSignal,
   isSignalTravelling,
+  signalMobileCameraPushIn,
   signalCameraOffset,
   signalCameraAngles,
   type SignalNavigation,
@@ -55,6 +56,11 @@ export function TelevisionStatic({
   openingReadyRef?: RefObject<boolean>;
 }) {
   const [sampleRenderBounds] = useState(createTelevisionRenderBounds);
+  const [touchDevice] = useState(() =>
+    Boolean(
+      window.matchMedia?.('(pointer: coarse) and (max-width: 900px)').matches,
+    ),
+  );
   const [layoutPlaques] = useState(createPlaqueLayout);
   const plaquesRef = useRef<(Group | null)[]>([]);
   const canvas = useThree(({ gl }) => gl.domElement);
@@ -236,6 +242,10 @@ export function TelevisionStatic({
             weight,
           );
         }
+        if (touchDevice)
+          worldCamera.translateZ(
+            -signalMobileCameraPushIn(navigationRef.current.progress),
+          );
         const flight = navigationRef.current.flight;
         if (flight) {
           advanceFlight(
@@ -256,12 +266,15 @@ export function TelevisionStatic({
             worldCamera.lookAt(destinationCenter.current);
         }
         const lensWeight = Math.min(1, navigationRef.current.progress / 0.08);
-        worldCamera.fov +=
+        const portraitWidening =
           Math.max(0, 1 - size.width / size.height) *
           35 *
           lensWeight *
           lensWeight *
           (3 - 2 * lensWeight);
+        worldCamera.fov = touchDevice
+          ? Math.min(108, worldCamera.fov + portraitWidening)
+          : worldCamera.fov + portraitWidening;
         worldCamera.updateProjectionMatrix();
       }
       worldCamera.updateMatrixWorld();

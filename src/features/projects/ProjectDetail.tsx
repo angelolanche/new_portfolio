@@ -107,6 +107,7 @@ export function ProjectDetail({
                   muted
                   autoPlay={index === 0}
                   preload="metadata"
+                  poster={video.poster}
                   onLoadedMetadata={(event) => {
                     if (event.currentTarget.paused)
                       event.currentTarget.currentTime = 0.01;
@@ -114,15 +115,22 @@ export function ProjectDetail({
                   aria-label={`${project.title} — video ${index + 1}`}
                 >
                   <source
-                    src={video.url}
+                    src={video.preview}
                     type={
-                      video.url.toLowerCase().endsWith('.mov')
+                      video.preview.toLowerCase().endsWith('.mov')
                         ? 'video/quicktime'
                         : 'video/mp4'
                     }
                   />
-                  {video.preview !== video.url && (
-                    <source src={video.preview} type="video/mp4" />
+                  {video.url !== video.preview && (
+                    <source
+                      src={video.url}
+                      type={
+                        video.url.toLowerCase().endsWith('.mov')
+                          ? 'video/quicktime'
+                          : 'video/mp4'
+                      }
+                    />
                   )}
                   <a href={video.url}>Watch video</a>
                 </video>

@@ -7,6 +7,54 @@ import { projects } from '../../../../content/projects';
 import { canvas, setup, enterTv } from './openingHarness';
 
 describe('Opening touch', () => {
+  it('looks while a phone drag is held in the room and signal, then recenters on release', async () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn((query: string) => ({
+        matches: query.includes('pointer: coarse'),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })),
+    );
+    window.PointerEvent = class extends MouseEvent {
+      pointerType: string;
+      pointerId: number;
+      constructor(type: string, init: PointerEventInit) {
+        super(type, init);
+        this.pointerType = init.pointerType ?? '';
+        this.pointerId = init.pointerId ?? 0;
+      }
+    } as typeof PointerEvent;
+    try {
+      const scene = await setup();
+      const drag = (id: number) => {
+        fireEvent.pointerDown(scene, {
+          pointerType: 'touch',
+          pointerId: id,
+          clientX: 100,
+          clientY: 200,
+        });
+        fireEvent.pointerMove(scene, {
+          pointerType: 'touch',
+          pointerId: id,
+          clientX: 180,
+          clientY: 140,
+        });
+        expect(canvas.props?.pointerRef.current.x).toBeGreaterThan(0);
+        expect(canvas.props?.pointerRef.current.y).toBeLessThan(0);
+        fireEvent.pointerUp(scene, { pointerType: 'touch', pointerId: id });
+        expect(canvas.props?.pointerRef.current).toEqual({ x: 0, y: 0 });
+      };
+      drag(1);
+      await enterTv();
+      canvas.props!.navigationRef.current.progress = projects[0].progress;
+      canvas.props!.navigationRef.current.target = projects[0].progress;
+      drag(2);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('shows touch navigation buttons and moves one work in either direction', async () => {
     vi.stubGlobal(
       'matchMedia',

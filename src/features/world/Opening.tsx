@@ -157,19 +157,18 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
   return (
     <section
       ref={sectionRef}
-      className={`opening${entered ? ' signal-entered' : ''}`}
+      className={`opening${entered ? ' signal-entered' : ''}${touchDevice ? ' touch-device' : ''}`}
       aria-label="Between Frames interactive portfolio"
       aria-describedby="camera-instructions"
       tabIndex={0}
       {...handlers}
     >
       <p id="camera-instructions" className="sr-only">
-        Scroll or swipe to the next or previous work. The camera centers the
-        work during travel. Move the mouse to look around a work after arriving.
-        In free flight, use arrow keys to look. Page Up and Page Down select
-        works. Use two fingers to look up or down on touchscreens. WASD moves
-        freely; Q/E descends or ascends. Press Enter to open the selected work.
-        Press Esc to return from a work.
+        On desktop, scroll or use Page Up/Page Down to select a work; move the
+        mouse to look around it. In free flight, use arrows to look and WASD/QE
+        to move. On touchscreens, use the previous/next buttons to travel and
+        drag a finger to look; releasing returns the view toward center. Tap a
+        work to open it, and use Back to signal to return.
       </p>
       <SceneBoundary>
         <Suspense fallback={<LoadingScreen />}>
@@ -200,27 +199,22 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
         </button>
       </div>
       {touchDevice && (
-        <>
-          <div className="mobile-navigation" data-camera-controls>
-            <button
-              aria-label="Previous work"
-              disabled={!entered || interactionBlocked}
-              onClick={() => navigateTouch(-1)}
-            >
-              &lt;
-            </button>
-            <button
-              aria-label="Next work"
-              disabled={!entered || interactionBlocked}
-              onClick={() => navigateTouch(1)}
-            >
-              &gt;
-            </button>
-          </div>
-          <p className="rotate-prompt" role="status">
-            Rotate your phone to landscape for the best view.
-          </p>
-        </>
+        <div className="mobile-navigation" data-camera-controls>
+          <button
+            aria-label="Previous work"
+            disabled={!entered || interactionBlocked}
+            onClick={() => navigateTouch(-1)}
+          >
+            &lt;
+          </button>
+          <button
+            aria-label="Next work"
+            disabled={!entered || interactionBlocked}
+            onClick={() => navigateTouch(1)}
+          >
+            &gt;
+          </button>
+        </div>
       )}
       <small className="site-credit">
         Design &amp; development · Angelo Aosol © 2026
