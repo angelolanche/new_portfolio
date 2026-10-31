@@ -54,6 +54,18 @@ describe('fixed-position pointer look', () => {
       expect(camera.getWorldDirection(new Vector3()).y).toBeCloseTo(-pitch, 8);
     }
   });
+  it('gives touch devices a 40-degree look range before the TV without changing desktop', () => {
+    expect(sampleLookRange(0, false, true).horizontal).toBeCloseTo(
+      (Math.PI * 40) / 180,
+    );
+    expect(
+      sampleLookRange(openingDuration, false, true).horizontal,
+    ).toBeCloseTo((Math.PI * 40) / 180);
+    expect(sampleLookRange(0).horizontal).toBeCloseTo((Math.PI * 8) / 180);
+    expect(sampleLookRange(0, false, true).vertical).toBeCloseTo(
+      (Math.PI * 40) / 180,
+    );
+  });
   it('restores pointer control inside the TV without moving the camera position', () => {
     const current = { x: 0, y: 0 };
     const { camera, pose } = cameraAt(openingDuration);

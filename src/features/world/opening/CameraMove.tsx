@@ -95,7 +95,11 @@ export function CameraMove({
       const inspecting = navigationRef
         ? isInspectingSignalStop(navigationRef.current)
         : false;
-      const baseRange = sampleLookRange(elapsedRef.current, inspecting);
+      const baseRange = sampleLookRange(
+        elapsedRef.current,
+        inspecting,
+        touchDevice,
+      );
       const recentering =
         touchDevice && pointerRef.current.x === 0 && pointerRef.current.y === 0;
       const range = recentering ? { ...baseRange, response: 3.1 } : baseRange;

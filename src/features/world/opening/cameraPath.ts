@@ -106,7 +106,8 @@ export function createOpeningSampler(aspect: number, touchDevice = false) {
   const startTarget = new Vector3(portrait ? 2.4 : 2.3, 1.25, 2.6);
   const screenCenter = television.clone().add(new Vector3(-0.1, 1.34, 0.372));
   const formerEnd = television.clone().add(new Vector3(-0.1, 1.34, -0.72));
-  const finalFov = touchDevice ? 82 : portrait ? 54 : 50;
+  // Keep the approach lens readable; the signal world widens further after entry.
+  const finalFov = touchDevice ? 80 : portrait ? 54 : 50;
   const screenFrontZ = screenCenter.z + 0.022;
   const lensTangent = Math.tan((finalFov * Math.PI) / 360);
   const coverDistance = Math.min(
@@ -222,9 +223,9 @@ export function createOpeningSampler(aspect: number, touchDevice = false) {
     position.x += 0.55 * Math.sin(Math.PI * sofaPassage) ** 4;
     const acquireScreen = smoothStep(progress / (portrait ? 0.65 : 0.5));
     const target = startTarget.clone().lerp(screenCenter, acquireScreen);
-    const movingFov =
-      (touchDevice ? 72 : 50) +
-      (portrait ? 4 * progress + 4 * Math.sin(Math.PI * progress) : 0);
+    const movingFov = touchDevice
+      ? 80
+      : 50 + (portrait ? 4 * progress + 4 * Math.sin(Math.PI * progress) : 0);
     const settleLens = smoothStep((elapsed - 6.5) / (approachStart - 6.5));
     return {
       position,

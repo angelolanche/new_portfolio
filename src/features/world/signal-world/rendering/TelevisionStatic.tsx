@@ -268,12 +268,12 @@ export function TelevisionStatic({
         const lensWeight = Math.min(1, navigationRef.current.progress / 0.08);
         const portraitWidening =
           Math.max(0, 1 - size.width / size.height) *
-          35 *
+          (touchDevice ? 75 : 35) *
           lensWeight *
           lensWeight *
           (3 - 2 * lensWeight);
         worldCamera.fov = touchDevice
-          ? Math.min(108, worldCamera.fov + portraitWidening)
+          ? Math.min(120, worldCamera.fov + portraitWidening)
           : worldCamera.fov + portraitWidening;
         worldCamera.updateProjectionMatrix();
       }

@@ -80,10 +80,11 @@ it('keeps viewport samplers independent and repeatable across backwards seeks', 
   expect(portrait(0).position.z).toBeGreaterThan(initial.position.z);
 });
 
-it('uses a wider lens for mobile while preserving the approved desktop field of view', () => {
+it('uses an 80-degree mobile approach lens while preserving the approved desktop field of view', () => {
   const desktop = sampleOpening(8, 390 / 730).fov;
   const mobile = sampleOpening(8, 390 / 730, true).fov;
   expect(desktop).toBeLessThan(60);
+  expect(sampleOpening(openingDuration, 390 / 730, true).fov).toBeCloseTo(80);
   expect(mobile).toBeGreaterThan(desktop + 20);
 });
 function project(point: Vector3, time: number, aspect: number) {

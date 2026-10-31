@@ -9,16 +9,24 @@ const verticalLookAngle = (Math.PI * 5) / 180;
 
 export const workLookAngle = Math.PI / 4;
 
-export function sampleLookRange(seconds: number, inspecting = false) {
+export function sampleLookRange(
+  seconds: number,
+  inspecting = false,
+  touchDevice = false,
+) {
   const t = Math.max(0, Math.min(1, (seconds - openingDuration) / 1.2));
   const weight = t * t * (3 - 2 * t);
+  const mobileRoomLook = touchDevice && seconds <= openingDuration;
   return {
-    horizontal:
-      horizontalLookAngle +
-      weight * ((inspecting ? workLookAngle : Math.PI) - horizontalLookAngle),
-    vertical:
-      verticalLookAngle +
-      weight * ((inspecting ? workLookAngle : Math.PI / 2) - verticalLookAngle),
+    horizontal: mobileRoomLook
+      ? (Math.PI * 40) / 180
+      : horizontalLookAngle +
+        weight * ((inspecting ? workLookAngle : Math.PI) - horizontalLookAngle),
+    vertical: mobileRoomLook
+      ? (Math.PI * 40) / 180
+      : verticalLookAngle +
+        weight *
+          ((inspecting ? workLookAngle : Math.PI / 2) - verticalLookAngle),
     unbounded: seconds >= openingDuration && !inspecting,
     response: 8 + weight * 2,
     weight,

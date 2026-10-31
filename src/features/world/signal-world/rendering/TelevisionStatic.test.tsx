@@ -341,7 +341,7 @@ it('pushes the mobile signal camera closer to a work and widens its final lens',
       ).applyQuaternion(worldCamera.quaternion),
     );
     expect(worldCamera.position.distanceTo(basePosition)).toBeLessThan(1e-6);
-    expect(worldCamera.fov).toBeGreaterThan(100);
+    expect(worldCamera.fov).toBeGreaterThan(115);
   } finally {
     vi.unstubAllGlobals();
   }
