@@ -14,7 +14,7 @@ vi.mock('../scenePreload', () => ({
   reportLoading: () => {},
   getLoadingProgress: () => 0,
   getLoadingStartedAt: () => Date.now(),
-  minimumLoadingDuration: 5000,
+  minimumLoadingDuration: 800,
   subscribeLoading: () => () => {},
 }));
 vi.mock('../OpeningCanvas', () => ({

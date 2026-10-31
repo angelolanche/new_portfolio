@@ -3,7 +3,7 @@ const videos = new Map<string, HTMLVideoElement>();
 const listeners = new Set<() => void>();
 let progress = 0;
 let preparation: Promise<void> | undefined;
-export const minimumLoadingDuration = 5000;
+export const minimumLoadingDuration = 800;
 let loadingStartedAt: number | undefined;
 const pendingSceneAssets = new Set<symbol>();
 let sceneAssetCount = 0;

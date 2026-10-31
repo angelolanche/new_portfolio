@@ -121,6 +121,7 @@ export function RealisticSpace({
     const playback = createExteriorPlayback(video, reducedMotion, showPoster);
     playbackRef.current = playback;
     const fail = () => {
+      if (!active) return;
       allowPoster = true;
       showPoster();
       playback.fail();
@@ -128,6 +129,7 @@ export function RealisticSpace({
     video.addEventListener('loadeddata', showVideo);
     if (video.readyState >= 2) queueMicrotask(showVideo);
     video.addEventListener('error', fail);
+    if (video.error) queueMicrotask(fail);
     return () => {
       active = false;
       playbackRef.current = null;

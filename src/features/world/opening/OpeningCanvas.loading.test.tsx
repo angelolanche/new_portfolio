@@ -92,13 +92,13 @@ it('keeps animation paused until rendered warm-up frames and visible 100% comple
   });
   expect(screen.getByTestId('camera')).toHaveAttribute('data-playing', 'false');
   act(() => frame());
-  act(() => vi.advanceTimersByTime(2500));
+  act(() => vi.advanceTimersByTime(400));
   expect(screen.getByRole('progressbar')).toHaveAttribute(
     'aria-valuenow',
     '100',
   );
   expect(screen.getByTestId('camera')).toHaveAttribute('data-playing', 'false');
-  act(() => vi.advanceTimersByTime(2500));
+  act(() => vi.advanceTimersByTime(400));
   expect(screen.getByRole('progressbar')).toHaveAttribute(
     'aria-valuenow',
     '100',
@@ -117,7 +117,7 @@ it('keeps animation paused until rendered warm-up frames and visible 100% comple
 it('removes the loading overlay when WebGL is unavailable so the HTML fallback remains accessible', () => {
   state.webgl = false;
   setup();
-  act(() => vi.advanceTimersByTime(5780));
+  act(() => vi.advanceTimersByTime(1580));
   expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
   expect(screen.getByText(/WebGL is unavailable/)).toBeVisible();
 });
