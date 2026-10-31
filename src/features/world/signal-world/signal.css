@@ -67,9 +67,14 @@
   width: 100vw;
   max-width: none;
   height: 100svh;
+  height: 100dvh;
   max-height: none;
   margin: 0;
   padding: clamp(20px, 5vw, 72px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .project-detail::backdrop {
   background: #0003;
@@ -374,7 +379,10 @@
 }
 .work-index {
   width: min(760px, calc(100vw - 32px));
-  max-height: calc(100svh - 40px);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding: clamp(20px, 4vw, 48px);
 }
 .work-index h2 {
@@ -435,8 +443,68 @@
     height: min(62svh, 600px);
   }
   .signal-access {
-    top: 16px;
-    right: 16px;
+    top: max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    gap: 6px;
+  }
+
+  .signal-access button {
+    min-height: 44px;
+    padding: 8px 12px;
+  }
+
+  .project-detail {
+    padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  }
+
+  .project-detail article {
+    margin: clamp(28px, 7vh, 56px) auto 48px;
+  }
+
+  .project-detail h2 {
+    font-size: clamp(38px, 12vw, 64px);
+    margin: 18px 0 28px;
+    overflow-wrap: anywhere;
+  }
+
+  .project-detail .detail-top {
+    gap: 10px;
+  }
+
+  .project-detail .detail-top > span {
+    min-width: 0;
+  }
+
+  .project-detail .detail-top button {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 8px 10px;
+  }
+
+  .work-index {
+    width: calc(100vw - 24px);
+    max-height: calc(100dvh - 24px);
+    padding: 20px 16px;
+  }
+
+  .index-row {
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .index-row a {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    line-height: 1.25;
+  }
+
+  .index-row button {
+    flex: 0 0 auto;
+    min-height: 44px;
+  }
+
+  .detail-bottom {
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
   }
 
   .site-credit {
@@ -445,9 +513,6 @@
     font-size: 8px;
   }
 
-  .project-detail article {
-    margin-top: 13vh;
-  }
   .detail-top {
     gap: 14px;
     font-size: 9px;
