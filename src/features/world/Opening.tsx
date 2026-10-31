@@ -13,6 +13,8 @@ import { signalEntryEnd as entryEnd } from './opening/timing';
 
 import {
   createFlight,
+  isSignalTravelling,
+  nextWorkProgress,
   type SignalNavigation,
 } from './signal-world/navigation/signalNavigation';
 import {
@@ -45,6 +47,11 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
   const [reducedMotion] = useState(() =>
     Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches),
   );
+  const [touchDevice] = useState(() =>
+    Boolean(
+      window.matchMedia?.('(pointer: coarse) and (max-width: 900px)').matches,
+    ),
+  );
   const pointerRef = useRef<PointerLook>({ x: 0, y: 0 });
 
   const elapsedRef = useRef(
@@ -60,11 +67,11 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
   const indexDialog = useRef<HTMLDialogElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const pushedProject = useRef(false);
-
   const [entered, setEntered] = useState(
     Boolean(project) || aboutOpen || reducedMotion,
   );
   const [indexOpen, setIndexOpen] = useState(false);
+  const interactionBlocked = Boolean(project) || aboutOpen || indexOpen;
   const sectionRef = useRef<HTMLElement>(null);
   const { handlers, move, resetPointer } = useOpeningControls({
     pointerRef,
@@ -73,7 +80,8 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
     sectionRef,
     indexDialog,
     entered,
-    blocked: Boolean(project) || aboutOpen || indexOpen,
+    touchDevice,
+    blocked: interactionBlocked,
     onOpenWork: () => {
       const selected = projects.find(
         (item) =>
@@ -90,6 +98,15 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
   const enter = () => {
     elapsedRef.current = entryEnd;
     setEntered(true);
+  };
+  const navigateTouch = (direction: -1 | 1) => {
+    if (
+      !entered ||
+      interactionBlocked ||
+      isSignalTravelling(navigationRef.current)
+    )
+      return;
+    move(nextWorkProgress(navigationRef.current.target, direction));
   };
   const openProject = useCallback((item: Project) => {
     returnFocus.current = sectionRef.current;
@@ -182,7 +199,32 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
           About
         </button>
       </div>
-      <small className="site-credit">Design &amp; development · Angelo Aosol © 2026</small>
+      {touchDevice && (
+        <>
+          <div className="mobile-navigation" data-camera-controls>
+            <button
+              aria-label="Previous work"
+              disabled={!entered || interactionBlocked}
+              onClick={() => navigateTouch(-1)}
+            >
+              &lt;
+            </button>
+            <button
+              aria-label="Next work"
+              disabled={!entered || interactionBlocked}
+              onClick={() => navigateTouch(1)}
+            >
+              &gt;
+            </button>
+          </div>
+          <p className="rotate-prompt" role="status">
+            Rotate your phone to landscape for the best view.
+          </p>
+        </>
+      )}
+      <small className="site-credit">
+        Design &amp; development · Angelo Aosol © 2026
+      </small>
       <dialog
         ref={indexDialog}
         className="work-index"

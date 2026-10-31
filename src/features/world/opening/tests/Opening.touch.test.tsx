@@ -1,12 +1,33 @@
 // @vitest-environment jsdom
-import { fireEvent } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import { projects } from '../../../../content/projects';
 
 import { canvas, setup, enterTv } from './openingHarness';
 
 describe('Opening touch', () => {
+  it('shows touch navigation buttons and moves one work in either direction', async () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn((query: string) => ({
+        matches: query.includes('pointer: coarse'),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })),
+    );
+    await setup();
+    await enterTv();
+    fireEvent.click(screen.getByRole('button', { name: 'Next work' }));
+    expect(canvas.props?.navigationRef.current.target).toBeCloseTo(
+      projects[0].progress,
+    );
+    canvas.props!.navigationRef.current.progress = projects[0].progress;
+    fireEvent.click(screen.getByRole('button', { name: 'Previous work' }));
+    expect(canvas.props?.navigationRef.current.target).toBe(0);
+    vi.unstubAllGlobals();
+  });
+
   it('uses vertical touch swipes for travel and horizontal swipes for persistent look', async () => {
     // jsdom has no PointerEvent implementation; preserve the actual pointer fields.
     window.PointerEvent = class extends MouseEvent {

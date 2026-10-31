@@ -11,6 +11,8 @@ import {
 
 export function SunInstructions({ clockRef }: { clockRef: RefObject<number> }) {
   const aspect = useThree(({ size }) => size.width / size.height);
+  if (window.matchMedia?.('(pointer: coarse) and (max-width: 900px)').matches)
+    return null;
   return (
     <group position={signalSunPosition} rotation={[sunInstructionPitch, 0, 0]}>
       <group

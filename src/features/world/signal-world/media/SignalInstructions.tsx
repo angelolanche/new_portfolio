@@ -1,5 +1,8 @@
 import type { RefObject } from 'react';
-import { signalInstructions } from './signalInstructionTexture';
+import {
+  signalInstructions,
+  touchSignalInstructions,
+} from './signalInstructionTexture';
 import { FloatingInstructionBlock } from './FloatingInstructionBlock';
 
 export function SignalInstructions({
@@ -7,9 +10,14 @@ export function SignalInstructions({
 }: {
   clockRef: RefObject<number>;
 }) {
+  const instructions = window.matchMedia?.(
+    '(pointer: coarse) and (max-width: 900px)',
+  ).matches
+    ? touchSignalInstructions
+    : signalInstructions;
   return (
     <group>
-      {signalInstructions.map((text, i) => (
+      {instructions.map((text, i) => (
         <FloatingInstructionBlock
           key={text}
           text={text}

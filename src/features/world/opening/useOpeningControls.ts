@@ -26,6 +26,7 @@ type Options = {
   sectionRef: RefObject<HTMLElement | null>;
   indexDialog: RefObject<HTMLDialogElement | null>;
   entered: boolean;
+  touchDevice: boolean;
   blocked: boolean;
   onOpenWork: () => void;
 };
@@ -37,6 +38,7 @@ export function useOpeningControls({
   sectionRef,
   indexDialog,
   entered,
+  touchDevice,
   blocked,
   onOpenWork,
 }: Options) {
@@ -47,6 +49,7 @@ export function useOpeningControls({
     navigationRef,
     elapsedRef,
     entered,
+    touchDevice,
     blocked,
     onMove: (target) => move(target),
   });
@@ -115,6 +118,7 @@ export function useOpeningControls({
     onKeyDown: (event) => {
       if (blocked || event.target !== event.currentTarget) return;
       if (!entered) return;
+      if (touchDevice) return;
       if (event.key === 'Enter') {
         event.preventDefault();
         if (!event.repeat && !isSignalTravelling(navigationRef.current))

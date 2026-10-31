@@ -22,6 +22,7 @@ type Options = {
   navigationRef: RefObject<SignalNavigation>;
   elapsedRef: RefObject<number>;
   entered: boolean;
+  touchDevice: boolean;
   blocked: boolean;
   onMove: (target: number) => void;
 };
@@ -30,6 +31,7 @@ export function useOpeningPointer({
   navigationRef,
   elapsedRef,
   entered,
+  touchDevice,
   blocked,
   onMove,
 }: Options) {
@@ -62,6 +64,7 @@ export function useOpeningPointer({
           event.target.closest('button, a, input'))
       )
         return;
+      if (touchDevice) return;
       touchesRef.current.set(event.pointerId, {
         x: event.clientX,
         y: event.clientY,
@@ -91,6 +94,7 @@ export function useOpeningPointer({
         return;
       }
       if (event.pointerType === 'touch') {
+        if (touchDevice) return;
         const touch = touchesRef.current.get(event.pointerId);
         if (touch) {
           const width = event.currentTarget.clientWidth || 400;

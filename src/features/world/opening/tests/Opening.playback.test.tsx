@@ -26,7 +26,9 @@ describe('Opening playback', () => {
   it('starts reduced-motion visitors inside the signal without needing a removed Play button', async () => {
     vi.stubGlobal(
       'matchMedia',
-      vi.fn(() => ({ matches: true })),
+      vi.fn((query: string) => ({
+        matches: query.includes('prefers-reduced-motion'),
+      })),
     );
     try {
       const scene = await setup();
