@@ -1,4 +1,11 @@
-import { useEffect, useSyncExternalStore, type CSSProperties } from 'react';
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+} from 'react';
 import {
   getLoadingProgress,
   subscribeLoading,
@@ -6,26 +13,48 @@ import {
 } from './scenePreload';
 
 export function LoadingScreen({ exiting = false }: { exiting?: boolean }) {
+  const artRef = useRef<HTMLDivElement>(null);
+  const [artReady, setArtReady] = useState(false);
   const progress = Math.round(
     useSyncExternalStore(subscribeLoading, getLoadingProgress),
   );
   useEffect(() => {
     getLoadingStartedAt();
-    document.getElementById('boot-loader')?.remove();
+    let active = true;
+    const images = Array.from(artRef.current?.querySelectorAll('img') ?? []);
+    Promise.allSettled(
+      images.map((image) => image.decode?.() ?? Promise.resolve()),
+    ).then((results) => {
+      if (active && results.every((result) => result.status === 'fulfilled')) {
+        setArtReady(true);
+      } else if (
+        (active && results.some((result) => result.status === 'rejected')) ||
+        (!active && !document.querySelector('.scene-loading:not(#boot-loader)'))
+      ) {
+        document.getElementById('boot-loader')?.remove();
+      }
+    });
+    return () => {
+      active = false;
+    };
   }, []);
+  useLayoutEffect(() => {
+    if (artReady) document.getElementById('boot-loader')?.remove();
+  }, [artReady]);
   return (
     <div
-      className={`scene-loading${exiting ? ' is-leaving' : ''}`}
+      className={`scene-loading${artReady ? ' is-art-ready' : ''}${exiting ? ' is-leaving' : ''}`}
       style={{ '--load': `${progress}%` } as CSSProperties}
     >
-      <div className="loading-art" aria-hidden="true">
+      <div className="loading-art" aria-hidden="true" ref={artRef}>
         <img
           className="loading-tether"
           src="/media/loading-tether.svg"
           alt=""
+          fetchPriority="high"
         />
         <div className="loading-sun">
-          <img src="/favicon.svg" alt="" />
+          <img src="/favicon.svg" alt="" fetchPriority="high" />
         </div>
         <div className="loading-television">
           <div className="loading-screen">
@@ -35,6 +64,7 @@ export function LoadingScreen({ exiting = false }: { exiting?: boolean }) {
             className="loading-tv"
             src="/media/loading-tv-sketch.jpg"
             alt=""
+            fetchPriority="high"
           />
         </div>
       </div>

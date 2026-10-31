@@ -84,6 +84,9 @@ it('replaces the initial HTML loader and exposes live accessible progress', asyn
   boot.id = 'boot-loader';
   document.body.append(boot);
   render(<LoadingScreen />);
+  await act(async () => {
+    await Promise.resolve();
+  });
   expect(document.getElementById('boot-loader')).toBeNull();
   expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0');
   act(() => preload.reportLoading(85));
@@ -102,6 +105,57 @@ it('replaces the initial HTML loader and exposes live accessible progress', asyn
     'aria-valuenow',
     '100',
   );
+});
+
+it('keeps the initial artwork visible until all React loading images decode', async () => {
+  const originalDecode = Object.getOwnPropertyDescriptor(
+    HTMLImageElement.prototype,
+    'decode',
+  );
+  const resolveImages: Array<() => void> = [];
+  Object.defineProperty(HTMLImageElement.prototype, 'decode', {
+    configurable: true,
+    value: () =>
+      new Promise<void>((resolve) => {
+        resolveImages.push(resolve);
+      }),
+  });
+  try {
+    const { LoadingScreen } = await import('./LoadingScreen');
+    const boot = document.createElement('div');
+    boot.id = 'boot-loader';
+    document.body.append(boot);
+    const { container } = render(<LoadingScreen />);
+    expect(boot).toBeInTheDocument();
+    expect(container.querySelector('.scene-loading')).not.toHaveClass(
+      'is-art-ready',
+    );
+    expect(resolveImages).toHaveLength(3);
+    await act(async () => {
+      resolveImages[0]();
+      resolveImages[1]();
+      await Promise.resolve();
+    });
+    expect(boot).toBeInTheDocument();
+    await act(async () => {
+      resolveImages[2]();
+      await Promise.resolve();
+    });
+    expect(boot).not.toBeInTheDocument();
+    expect(container.querySelector('.scene-loading')).toHaveClass(
+      'is-art-ready',
+    );
+  } finally {
+    if (originalDecode) {
+      Object.defineProperty(
+        HTMLImageElement.prototype,
+        'decode',
+        originalDecode,
+      );
+    } else {
+      Reflect.deleteProperty(HTMLImageElement.prototype, 'decode');
+    }
+  }
 });
 
 it('tracks outstanding scene assets and resolves each only once', async () => {

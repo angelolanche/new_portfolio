@@ -4,6 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" as="image" href="/favicon.svg" fetchpriority="high" />
+    <link
+      rel="preload"
+      as="image"
+      href="/media/loading-tv-sketch.jpg"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="/media/loading-tether.svg"
+      fetchpriority="high"
+    />
     <link rel="canonical" href="https://angeloaosol.xyz/" />
     <meta
       name="description"
@@ -47,17 +60,42 @@
       aria-label="Preparing the scene"
     >
       <div class="loading-art" aria-hidden="true">
-        <img class="loading-tether" src="/media/loading-tether.svg" alt="" />
-        <div class="loading-sun"><img src="/favicon.svg" alt="" /></div>
+        <img
+          class="loading-tether"
+          src="/media/loading-tether.svg"
+          alt=""
+          fetchpriority="high"
+          decoding="sync"
+        />
+        <div class="loading-sun">
+          <img src="/favicon.svg" alt="" fetchpriority="high" decoding="sync" />
+        </div>
         <div class="loading-television">
           <div class="loading-screen"><div class="loading-fluid"></div></div>
-          <img class="loading-tv" src="/media/loading-tv-sketch.jpg" alt="" />
+          <img
+            class="loading-tv"
+            src="/media/loading-tv-sketch.jpg"
+            alt=""
+            fetchpriority="high"
+            decoding="sync"
+          />
         </div>
       </div>
       <div>
         <span class="loading-caption">loading...</span>
       </div>
     </div>
+    <script>
+      Promise.all(
+        Array.from(document.querySelectorAll('#boot-loader img'), (image) =>
+          image.decode(),
+        ),
+      )
+        .then(() => {
+          document.getElementById('boot-loader')?.classList.add('is-art-ready');
+        })
+        .catch(() => {});
+    </script>
     <noscript
       ><style>
         #boot-loader {

@@ -17,6 +17,12 @@
   opacity: 0;
   pointer-events: none;
 }
+#boot-loader {
+  z-index: 21;
+}
+.scene-loading:not(.is-art-ready) .loading-art {
+  visibility: hidden;
+}
 .loading-art {
   position: relative;
   width: min(500px, 82vw);
