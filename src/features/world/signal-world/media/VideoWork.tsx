@@ -17,6 +17,7 @@ import type { SignalNavigation } from '../navigation/signalNavigation';
 import { sampleFloat, videoFloatAmplitude } from '../signalFloat';
 import { projectBlockDepth } from '../signalLayout';
 import { createVideoBlockGeometry } from './videoBlockGeometry';
+import { configureMonolitoPlayback } from './monolitoPlayback';
 import { trackSceneAsset } from '../../opening/scenePreload';
 
 export function VideoWork({
@@ -53,8 +54,11 @@ export function VideoWork({
     video.muted = true;
     // Monolito's opening frames are nearly black; start its signal surface
     // halfway through and return to that point on each loop.
-    const startAtHalf = project.slug === 'monolito';
-    video.loop = !startAtHalf;
+    const cleanupMonolitoPlayback =
+      project.slug === 'monolito'
+        ? configureMonolitoPlayback(video)
+        : undefined;
+    if (!cleanupMonolitoPlayback) video.loop = true;
     video.playsInline = true;
     video.preload = 'auto';
     const poster = new TextureLoader().load(
@@ -76,18 +80,11 @@ export function VideoWork({
     const texture = new VideoTexture(video);
     texture.colorSpace = SRGBColorSpace;
     const showVideo = () => {
-      if (startAtHalf && video.duration > 0 && video.currentTime < video.duration / 2)
-        video.currentTime = video.duration / 2;
       videoReadyRef.current?.();
       if (videoMaterialRef.current) {
         videoMaterialRef.current.map = texture;
         videoMaterialRef.current.needsUpdate = true;
       }
-    };
-    const restartAtHalf = () => {
-      if (!startAtHalf || !Number.isFinite(video.duration)) return;
-      video.currentTime = video.duration / 2;
-      if (playing) void video.play().catch(() => {});
     };
     const fallback = () => {
       videoReadyRef.current?.();
@@ -99,7 +96,6 @@ export function VideoWork({
     video.addEventListener('loadeddata', showVideo);
     video.addEventListener('error', fallback);
     video.addEventListener('emptied', fallback);
-    video.addEventListener('ended', restartAtHalf);
     videoElementRef.current = video;
     return () => {
       posterDone();
@@ -108,14 +104,14 @@ export function VideoWork({
       video.removeEventListener('loadeddata', showVideo);
       video.removeEventListener('error', fallback);
       video.removeEventListener('emptied', fallback);
-      video.removeEventListener('ended', restartAtHalf);
+      cleanupMonolitoPlayback?.();
       video.removeAttribute('src');
       video.load();
       videoElementRef.current = null;
       texture.dispose();
       poster.dispose();
     };
-  }, [primaryVideo]);
+  }, [primaryVideo, project.slug]);
   useFrame(() => {
     if (videoGroupRef.current) {
       sampleFloat(

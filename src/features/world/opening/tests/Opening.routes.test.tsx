@@ -53,6 +53,10 @@ describe('Opening routes', () => {
     const film = screen.getByLabelText('Delivery Room — video 1');
     expect(film.querySelector('source')).toHaveAttribute(
       'src',
+      '/media/projects/bmw.mp4',
+    );
+    expect(film.querySelectorAll('source')[1]).toHaveAttribute(
+      'src',
       expect.stringContaining(
         'video.wixstatic.com/video/072acd_011f1d894bbf4c17b467f01aba6f1510/',
       ),
