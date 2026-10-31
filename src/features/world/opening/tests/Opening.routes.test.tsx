@@ -101,6 +101,20 @@ describe('Opening routes', () => {
     await setup();
     const about = screen.getByRole('dialog', { name: 'Angelo AoSol' });
     expect(within(about).getByText(/At 30, I understood/)).toBeVisible();
+    const film = within(about).getByLabelText('Angelo AoSol — About film');
+    expect(film).toHaveAttribute('poster', '/media/about-angelo.jpg');
+    expect(film.querySelector('source')).toHaveAttribute(
+      'src',
+      '/media/about-angelo.mp4',
+    );
+    expect(about.querySelectorAll('.about-threads path')).toHaveLength(35);
+    expect(about.querySelector('.about-threads')).toHaveAttribute(
+      'viewBox',
+      '0 0 1440 2400',
+    );
+    expect(
+      within(about).queryByRole('link', { name: /Original About/i }),
+    ).not.toBeInTheDocument();
     expect(
       within(about).getByRole('link', { name: 'angelo.pjsol@gmail.com ↗' }),
     ).toHaveAttribute('href', 'mailto:angelo.pjsol@gmail.com');
