@@ -105,7 +105,7 @@ it('keeps animation paused until rendered warm-up frames and visible 100% comple
   );
   expect(props.elapsedRef.current).toBe(0);
   act(() => vi.advanceTimersByTime(180));
-  expect(screen.getByRole('progressbar').parentElement).toHaveClass(
+  expect(screen.getByRole('progressbar').closest('.scene-loading')).toHaveClass(
     'is-leaving',
   );
   expect(screen.getByTestId('camera')).toHaveAttribute('data-playing', 'false');
@@ -151,9 +151,9 @@ it('waits for every outstanding scene asset before beginning the reveal', () => 
     for (let i = 0; i < 5; i++) frame();
     vi.advanceTimersByTime(6000);
   });
-  expect(screen.getByRole('progressbar').parentElement).not.toHaveClass(
-    'is-leaving',
-  );
+  expect(
+    screen.getByRole('progressbar').closest('.scene-loading'),
+  ).not.toHaveClass('is-leaving');
   act(() => {
     done();
     frame();

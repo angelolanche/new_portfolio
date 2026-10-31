@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" as="image" href="/favicon.svg" fetchpriority="high" />
     <link
@@ -59,31 +62,39 @@
       class="scene-loading"
       aria-label="Preparing the scene"
     >
-      <div class="loading-art" aria-hidden="true">
-        <img
-          class="loading-tether"
-          src="/media/loading-tether.svg"
-          alt=""
-          fetchpriority="high"
-          decoding="sync"
-        />
-        <div class="loading-sun">
-          <img src="/favicon.svg" alt="" fetchpriority="high" decoding="sync" />
-        </div>
-        <div class="loading-television">
-          <div class="loading-screen"><div class="loading-fluid"></div></div>
+      <div class="loading-assembly">
+        <div class="loading-art" aria-hidden="true">
           <img
-            class="loading-tv"
-            src="/media/loading-tv-sketch.jpg"
+            class="loading-tether"
+            src="/media/loading-tether.svg"
             alt=""
             fetchpriority="high"
             decoding="sync"
           />
+          <div class="loading-sun">
+            <img
+              src="/favicon.svg"
+              alt=""
+              fetchpriority="high"
+              decoding="sync"
+            />
+          </div>
+          <div class="loading-television">
+            <div class="loading-screen"><div class="loading-fluid"></div></div>
+            <img
+              class="loading-tv"
+              src="/media/loading-tv-sketch.jpg"
+              alt=""
+              fetchpriority="high"
+              decoding="sync"
+            />
+          </div>
+        </div>
+        <div>
+          <span class="loading-caption">loading...</span>
         </div>
       </div>
-      <div>
-        <span class="loading-caption">loading...</span>
-      </div>
+      <span class="loading-rotate-prompt">Rotate your phone to landscape</span>
     </div>
     <script>
       Promise.all(

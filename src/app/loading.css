@@ -20,6 +20,11 @@
 #boot-loader {
   z-index: 21;
 }
+.loading-assembly {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .scene-loading:not(.is-art-ready) .loading-art {
   visibility: hidden;
 }
@@ -28,6 +33,9 @@
   width: min(500px, 82vw);
   aspect-ratio: 500 / 340;
   transform: translateX(-5%);
+}
+.loading-rotate-prompt {
+  display: none;
 }
 .loading-tether {
   position: absolute;
@@ -181,6 +189,34 @@
     transform: rotate(1deg);
   }
 }
+@keyframes loading-phone-turn {
+  0%,
+  15%,
+  100% {
+    transform: translateX(-5%) rotate(0deg);
+  }
+  55%,
+  75% {
+    transform: translateX(-5%) rotate(90deg);
+  }
+}
+@media (pointer: coarse) and (max-width: 900px) and (orientation: portrait) {
+  .loading-art {
+    width: min(500px, 72vw);
+  }
+  .loading-assembly {
+    animation: loading-phone-turn 3.6s ease-in-out infinite;
+  }
+  .loading-rotate-prompt {
+    display: block;
+    margin-top: clamp(56px, 8vh, 88px);
+    padding: 0 20px;
+    color: #ededed;
+    font: 12px/1.5 monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .loading-fluid {
     transition: none;
@@ -189,6 +225,9 @@
   .loading-tether,
   .loading-sun,
   .loading-caption {
+    animation: none;
+  }
+  .loading-assembly {
     animation: none;
   }
 }

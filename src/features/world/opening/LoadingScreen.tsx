@@ -46,37 +46,42 @@ export function LoadingScreen({ exiting = false }: { exiting?: boolean }) {
       className={`scene-loading${artReady ? ' is-art-ready' : ''}${exiting ? ' is-leaving' : ''}`}
       style={{ '--load': `${progress}%` } as CSSProperties}
     >
-      <div className="loading-art" aria-hidden="true" ref={artRef}>
-        <img
-          className="loading-tether"
-          src="/media/loading-tether.svg"
-          alt=""
-          fetchPriority="high"
-        />
-        <div className="loading-sun">
-          <img src="/favicon.svg" alt="" fetchPriority="high" />
-        </div>
-        <div className="loading-television">
-          <div className="loading-screen">
-            <div className="loading-fluid" />
-          </div>
+      <div className="loading-assembly">
+        <div className="loading-art" aria-hidden="true" ref={artRef}>
           <img
-            className="loading-tv"
-            src="/media/loading-tv-sketch.jpg"
+            className="loading-tether"
+            src="/media/loading-tether.svg"
             alt=""
             fetchPriority="high"
           />
+          <div className="loading-sun">
+            <img src="/favicon.svg" alt="" fetchPriority="high" />
+          </div>
+          <div className="loading-television">
+            <div className="loading-screen">
+              <div className="loading-fluid" />
+            </div>
+            <img
+              className="loading-tv"
+              src="/media/loading-tv-sketch.jpg"
+              alt=""
+              fetchPriority="high"
+            />
+          </div>
+        </div>
+        <div
+          role="progressbar"
+          aria-label="Preparing the scene"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progress}
+        >
+          <span className="loading-caption">loading...</span>
         </div>
       </div>
-      <div
-        role="progressbar"
-        aria-label="Preparing the scene"
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={progress}
-      >
-        <span className="loading-caption">loading...</span>
-      </div>
+      <span className="loading-rotate-prompt">
+        Rotate your phone to landscape
+      </span>
     </div>
   );
 }
