@@ -22,6 +22,19 @@ it('keeps every work and its local media linked to actual files', () => {
     expect(project.description.trim()).toBeTruthy();
     expect(project.source).toMatch(/^https:\/\//);
     expect(project.videos.length).toBeGreaterThan(0);
+    const signalVideo = signalVideoFor(project);
+    expect(signalVideo.preview, `${project.slug}: signal video`).toMatch(
+      /^\/media\/projects\/.+\.mp4$/,
+    );
+    expect(signalVideo.poster, `${project.slug}: signal poster`).toMatch(
+      /^\/media\/projects\/.+\.(?:jpg|png|webp)$/,
+    );
+    for (const path of [signalVideo.preview, signalVideo.poster]) {
+      expect(
+        existsSync(join(process.cwd(), 'public', path.slice(1))),
+        `${project.slug}: signal asset ${path}`,
+      ).toBe(true);
+    }
     const paths = [
       ...('image' in project ? [project.image.src] : []),
       ...('images' in project ? project.images.map((image) => image.src) : []),
@@ -96,15 +109,22 @@ it('shows the requested project images and names the MIS venue', () => {
   ).toHaveAttribute('src', '/media/projects/coisa-8-lentes.png');
   expect(screen.queryByText(/Installation sketch/)).not.toBeInTheDocument();
 
-  const cerebro = projects.find((item) => item.slug === 'interactive-led-brain')!;
+  const cerebro = projects.find(
+    (item) => item.slug === 'interactive-led-brain',
+  )!;
   rerender(<ProjectDetail project={cerebro} onClose={() => {}} />);
-  expect(screen.getByText(/Museu da Imagem e do Som \(MIS\) in São Paulo/)).toBeInTheDocument();
+  expect(
+    screen.getByText(/Museu da Imagem e do Som \(MIS\) in São Paulo/),
+  ).toBeInTheDocument();
 
   const autorretrato = projects.find((item) => item.slug === 'autorretrato')!;
   rerender(<ProjectDetail project={autorretrato} onClose={() => {}} />);
   expect(
     screen.getByRole('img', { name: 'AutoRRetrato documentation' }),
-  ).toHaveAttribute('src', '/media/projects/autorretrato-festa-praga-full-poster.webp');
+  ).toHaveAttribute(
+    'src',
+    '/media/projects/autorretrato-festa-praga-full-poster.webp',
+  );
 
   const midiaHell = projects.find((item) => item.slug === 'midia-hell')!;
   rerender(<ProjectDetail project={midiaHell} onClose={() => {}} />);
@@ -201,6 +221,8 @@ it('keeps editorial copy beside media, avoids duplicate video covers and omits s
   expect(
     screen.queryByText('AutoRRetrato · Instagram variation'),
   ).not.toBeInTheDocument();
-  expect(screen.getByText('Festa Praga · full event poster')).toBeInTheDocument();
+  expect(
+    screen.getByText('Festa Praga · full event poster'),
+  ).toBeInTheDocument();
   expect(screen.getAllByLabelText(/AutoRRetrato — video/)).toHaveLength(2);
 });

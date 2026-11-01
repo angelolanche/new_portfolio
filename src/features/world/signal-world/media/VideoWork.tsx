@@ -18,6 +18,7 @@ import { sampleFloat, videoFloatAmplitude } from '../signalFloat';
 import { projectBlockDepth } from '../signalLayout';
 import { createVideoBlockGeometry } from './videoBlockGeometry';
 import { configureMonolitoPlayback } from './monolitoPlayback';
+import { bindSignalVideoTextureState } from './signalVideoTextureState';
 import { trackSceneAsset } from '../../opening/scenePreload';
 
 export function VideoWork({
@@ -61,15 +62,29 @@ export function VideoWork({
     if (!cleanupMonolitoPlayback) video.loop = true;
     video.playsInline = true;
     video.preload = 'auto';
+    const videoTextureState = bindSignalVideoTextureState(video, {
+      showPoster: () => {
+        if (videoMaterialRef.current) {
+          videoMaterialRef.current.map = poster;
+          videoMaterialRef.current.needsUpdate = true;
+        }
+      },
+      showVideo: () => {
+        texture.needsUpdate = true;
+        if (videoMaterialRef.current) {
+          videoMaterialRef.current.map = texture;
+          videoMaterialRef.current.needsUpdate = true;
+        }
+        videoReadyRef.current?.();
+      },
+      releasePendingLoad: () => videoReadyRef.current?.(),
+    });
     const poster = new TextureLoader().load(
       primaryVideo.poster,
       (texture) => {
         posterDone();
         texture.colorSpace = SRGBColorSpace;
-        if (videoMaterialRef.current && !video.src) {
-          videoMaterialRef.current.map = texture;
-          videoMaterialRef.current.needsUpdate = true;
-        }
+        videoTextureState.markPosterLoaded();
       },
       undefined,
       () => {
@@ -79,31 +94,12 @@ export function VideoWork({
     );
     const texture = new VideoTexture(video);
     texture.colorSpace = SRGBColorSpace;
-    const showVideo = () => {
-      videoReadyRef.current?.();
-      if (videoMaterialRef.current) {
-        videoMaterialRef.current.map = texture;
-        videoMaterialRef.current.needsUpdate = true;
-      }
-    };
-    const fallback = () => {
-      videoReadyRef.current?.();
-      if (videoMaterialRef.current) {
-        videoMaterialRef.current.map = poster;
-        videoMaterialRef.current.needsUpdate = true;
-      }
-    };
-    video.addEventListener('loadeddata', showVideo);
-    video.addEventListener('error', fallback);
-    video.addEventListener('emptied', fallback);
     videoElementRef.current = video;
     return () => {
       posterDone();
       videoReadyRef.current?.();
       video.pause();
-      video.removeEventListener('loadeddata', showVideo);
-      video.removeEventListener('error', fallback);
-      video.removeEventListener('emptied', fallback);
+      videoTextureState.dispose();
       cleanupMonolitoPlayback?.();
       video.removeAttribute('src');
       video.load();
