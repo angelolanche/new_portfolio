@@ -12,10 +12,22 @@
 
 .signal-access {
   position: absolute;
+  z-index: 4;
   right: 24px;
   top: 24px;
   display: flex;
   gap: 8px;
+}
+
+.signal-access button:first-child {
+  border-color: #ed191c;
+  background: #ed191c;
+  color: #fffdf1;
+  box-shadow: 0 2px 12px #0009;
+}
+
+.signal-access button:first-child:hover {
+  background: #b91116;
 }
 
 .mobile-navigation {
@@ -154,6 +166,7 @@
   margin: 6vh auto 8vh;
   max-width: 1180px;
 }
+.project-detail h1,
 .project-detail h2 {
   font-size: clamp(42px, 7vw, 100px);
   font-weight: 400;
@@ -183,13 +196,46 @@
   padding-top: 18px;
 }
 .project-copy-label {
+  display: table;
   font:
     13px 'Courier New',
     monospace;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #f46a6a;
+  color: gold;
+  background: #050505;
+  padding: 4px 8px;
   margin: 0 0 28px;
+}
+.project-facts {
+  display: grid;
+  gap: 14px;
+  margin: -8px 0 28px;
+  padding: 16px 0;
+  border-top: 1px solid #ffffff35;
+  border-bottom: 1px solid #ffffff35;
+}
+.project-facts > div {
+  display: grid;
+  grid-template-columns: minmax(0, 0.34fr) minmax(0, 1fr);
+  gap: 12px;
+}
+.project-facts dt {
+  align-self: start;
+  width: fit-content;
+  max-width: 100%;
+  padding: 3px 5px;
+  background: #050505;
+  color: gold;
+  font: 11px 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.project-facts dd {
+  min-width: 0;
+  margin: 0;
+  font: 13px/1.5 'Courier New', monospace;
+  overflow-wrap: anywhere;
 }
 .project-films {
   display: grid;
@@ -470,6 +516,7 @@
     margin: clamp(28px, 7vh, 56px) auto 48px;
   }
 
+  .project-detail h1,
   .project-detail h2 {
     font-size: clamp(38px, 12vw, 64px);
     margin: 18px 0 28px;

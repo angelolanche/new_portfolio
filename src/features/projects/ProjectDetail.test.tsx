@@ -60,6 +60,21 @@ it('keeps every work and its local media linked to actual files', () => {
   }
 });
 
+it('surfaces each documented role and tool as scannable project facts', () => {
+  const deliveryRoom = projects.find((project) => project.slug === 'bmw')!;
+  render(<ProjectDetail project={deliveryRoom} onClose={() => {}} />);
+
+  const facts = screen.getByText('Role').closest('.project-facts');
+  expect(facts).not.toBeNull();
+  expect(facts).toHaveTextContent('Technical direction');
+  expect(facts).toHaveTextContent('Systems integration');
+  expect(screen.getByText('Tools')).toBeInTheDocument();
+  expect(facts).toHaveTextContent(/TouchDesigner.*WebSockets.*Python.*Bash/);
+  expect(
+    screen.getByText(/I was responsible for making the project happen as a functioning system/),
+  ).toBeInTheDocument();
+});
+
 it('shows the Camera Roll poster and only the selected films', () => {
   render(<ProjectDetail project={projects[0]} onClose={() => {}} />);
   expect(

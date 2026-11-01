@@ -1,6 +1,22 @@
 import { useEffect, useRef } from 'react';
 import { projects, type Project } from '../../content/projects';
 
+function splitProjectDescription(description: string) {
+  const paragraphs = description.split(/\r?\n\s*\r?\n/);
+  const facts: { label: string; value: string }[] = [];
+  const narrative: string[] = [];
+  for (const paragraph of paragraphs) {
+    const story: string[] = [];
+    for (const line of paragraph.split(/\r?\n/)) {
+      const fact = line.trim().match(/^([^:\n]{2,48}):\s+(.+)$/);
+      if (fact) facts.push({ label: fact[1], value: fact[2] });
+      else story.push(line);
+    }
+    if (story.length > 0) narrative.push(story.join('\n'));
+  }
+  return { facts, narrative };
+}
+
 export function ProjectDetail({
   project,
   onClose,
@@ -15,6 +31,7 @@ export function ProjectDetail({
   ].filter(
     (image) => !project.videos.some((video) => video.poster === image.src),
   );
+  const { facts, narrative } = splitProjectDescription(project.description);
   useEffect(() => {
     const previous = document.activeElement;
     dialog.current?.showModal();
@@ -43,12 +60,22 @@ export function ProjectDetail({
       </div>
       <article>
         <p className="signal-eyebrow">{project.category}</p>
-        <h2 id="project-title">{project.title}</h2>
+        <h1 id="project-title">{project.title}</h1>
         <div className="project-editorial">
           <div className="project-copy">
             <p className="project-copy-label">The work</p>
+            {facts.length > 0 && (
+              <dl className="project-facts" aria-label="Project credits and tools">
+                {facts.map(({ label, value }) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
             <div className="project-description">
-              {project.description.split('\n\n').map((paragraph) => (
+              {narrative.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
             </div>

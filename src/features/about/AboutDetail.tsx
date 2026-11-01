@@ -110,6 +110,13 @@ export function AboutDetail({ onClose }: { onClose: () => void }) {
             >
               @angeloaosol ↗
             </a>
+            <a
+              href="https://www.linkedin.com/in/angelosoaresdeoli/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LinkedIn ↗
+            </a>
           </div>
         </article>
       </div>
