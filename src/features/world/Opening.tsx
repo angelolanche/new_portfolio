@@ -22,6 +22,12 @@ import {
   projectFromPath,
   type Project,
 } from '../../content/projects';
+import {
+  aboutMetadata,
+  applyPageMetadata,
+  homeMetadata,
+  projectMetadata,
+} from '../../content/projectMetadata';
 import { ProjectDetail } from '../projects/ProjectDetail';
 import { AboutDetail } from '../about/AboutDetail';
 import './signal-world/signal.css';
@@ -46,7 +52,7 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
     projectFromPath(window.location.pathname),
   );
   const [aboutOpen, setAboutOpen] = useState(
-    () => window.location.pathname === '/about',
+    () => window.location.pathname.replace(/\/+$/, '') === '/about',
   );
   const [reducedMotion] = useState(() =>
     Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches),
@@ -137,7 +143,7 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
   useEffect(() => {
     const pop = () => {
       const next = projectFromPath(window.location.pathname);
-      const about = window.location.pathname === '/about';
+      const about = window.location.pathname.replace(/\/+$/, '') === '/about';
       navigationRef.current.detailOpen = Boolean(next) || about;
       pushedProject.current = Boolean(
         (next || about) &&
@@ -150,6 +156,11 @@ export function Opening({ colorDither = true }: { colorDither?: boolean }) {
     window.addEventListener('popstate', pop);
     return () => window.removeEventListener('popstate', pop);
   }, []);
+  useEffect(() => {
+    applyPageMetadata(
+      project ? projectMetadata(project) : aboutOpen ? aboutMetadata() : homeMetadata(),
+    );
+  }, [project, aboutOpen]);
   useEffect(() => {
     if (!project && !aboutOpen) returnFocus.current?.focus();
   }, [project, aboutOpen]);

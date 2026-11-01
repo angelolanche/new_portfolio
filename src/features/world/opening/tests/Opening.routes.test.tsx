@@ -8,11 +8,42 @@ import {
 } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { projects } from '../../../../content/projects';
+import { projectFromPath, projects } from '../../../../content/projects';
 
 import { canvas, setup, enterTv } from './openingHarness';
 
 describe('Opening routes', () => {
+  it('serves a canonical share URL and page metadata for the selected work', async () => {
+    await setup();
+    fireEvent.click(screen.getByRole('button', { name: 'Work index +' }));
+    const index = screen.getByRole('dialog', { name: 'Work index' });
+    fireEvent.click(within(index).getByRole('link', { name: /Camera Roll/ }));
+
+    await waitFor(() =>
+      expect(document.title).toBe(
+        'Camera Roll — Angelo AoSol | Between Frames',
+      ),
+    );
+    expect(
+      document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href,
+    ).toBe('https://angeloaosol.xyz/projects/camera-roll/');
+    expect(
+      document.querySelector<HTMLMetaElement>('meta[property="og:title"]')
+        ?.content,
+    ).toBe(document.title);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Back to signal ↗' }));
+    await waitFor(() =>
+      expect(document.title).toBe(
+        'Creative Technologist — Angelo AoSol | Between Frames',
+      ),
+    );
+  });
+
+  it('accepts a trailing slash on direct project routes', () => {
+    expect(projectFromPath(`/projects/${projects[0].slug}/`)).toBe(projects[0]);
+  });
+
   it('opens an arrived work with Enter and restores its camera state on Escape', async () => {
     const scene = await setup();
     fireEvent.keyDown(scene, { key: 'Enter' });
@@ -128,11 +159,17 @@ describe('Opening routes', () => {
     expect(contactLinks.map((link) => link.textContent?.trim())).toEqual([
       'angelo.pjsol@gmail.com ↗',
       '@angeloaosol ↗',
+      'LinkedIn ↗',
     ]);
     expect(contactLinks[1]).toHaveAttribute(
       'href',
       'https://www.instagram.com/angeloaosol/',
     );
+    expect(contactLinks[2]).toHaveAttribute(
+      'href',
+      'https://www.linkedin.com/in/angelosoaresdeoli/',
+    );
+    expect(contactLinks[2]).toHaveAttribute('target', '_blank');
     expect(canvas.props?.suspended).toBe(true);
     fireEvent(about, new Event('cancel', { bubbles: true, cancelable: true }));
     expect(window.location.pathname).toBe('/');

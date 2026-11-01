@@ -603,5 +603,8 @@ export function signalVideoFor(project: Project) {
   return video;
 }
 export function projectFromPath(path: string) {
-  return projects.find((project) => path === '/projects/' + project.slug);
+  const normalizedPath = path.replace(/\/+$/, '');
+  return projects.find(
+    (project) => normalizedPath === '/projects/' + project.slug,
+  );
 }
