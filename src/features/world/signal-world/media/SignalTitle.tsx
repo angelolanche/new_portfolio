@@ -53,7 +53,7 @@ export function SignalTitle({
       context.lineWidth = 8;
       context.strokeStyle = '#11130d';
       context.strokeText('Creative Technologist', 512, 66);
-      context.fillStyle = 'gold';
+      context.fillStyle = '#ffdf55';
       context.fillText('Creative Technologist', 512, 66);
       // Small, deterministic marks give the caption a worn transfer-film edge.
       context.fillStyle = '#12140f';

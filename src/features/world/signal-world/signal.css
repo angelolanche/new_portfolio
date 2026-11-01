@@ -1,6 +1,9 @@
 .signal-entered {
   touch-action: none;
 }
+:root {
+  --signal-amber: #ffdf55;
+}
 
 .signal-eyebrow {
   font:
@@ -20,13 +23,28 @@
 }
 
 .signal-access button:first-child {
+  border-color: #eee9dc;
+  background: #eee9dc;
+  color: #191916;
+  box-shadow: 0 2px 12px #0009;
+}
+
+.signal-access button:first-child:hover,
+.signal-access button:first-child:focus-visible {
+  border-color: #ed191c;
+  background: #ed191c;
+  color: #fffdf1;
+}
+
+.signal-access button:last-child {
   border-color: #ed191c;
   background: #ed191c;
   color: #fffdf1;
   box-shadow: 0 2px 12px #0009;
 }
 
-.signal-access button:first-child:hover {
+.signal-access button:last-child:hover,
+.signal-access button:last-child:focus-visible {
   background: #b91116;
 }
 
@@ -38,9 +56,9 @@
   position: absolute;
   right: 24px;
   bottom: 18px;
-  color: gold;
+  color: var(--signal-amber);
   font:
-    12px 'Courier New',
+    10px 'Courier New',
     monospace;
   letter-spacing: 0.06em;
   -webkit-text-stroke: 0.35px #000;
@@ -51,8 +69,10 @@
     0px -2px 0px black,
     -1px 0px 0px black,
     -2px 0px 0px black,
+    -3px 0px 0px black,
     1px 0px 0px black,
-    2px 0px 0px black;
+    2px 0px 0px black,
+    3px 0px 0px black;
 
   pointer-events: none;
 }
@@ -65,9 +85,9 @@
 .work-index {
   position: fixed;
   border: 0;
-  background: #f4f2e9;
-  color: #161616;
-  color-scheme: light;
+  background: #11110fe0;
+  color: #fffdf1;
+  color-scheme: dark;
   touch-action: pan-y;
   overscroll-behavior: contain;
 }
@@ -108,6 +128,64 @@
   background-size: 180px;
   animation: signal-noise 180ms steps(2) infinite;
 }
+.project-detail {
+  font-family: Arial, sans-serif;
+}
+.project-detail::before {
+  opacity: 0.045;
+  animation: none;
+}
+.project-detail .project-copy {
+  padding: clamp(20px, 3vw, 36px);
+  border-top: 3px solid #ed191c;
+  background: #eee9dc;
+  color: #191916;
+}
+.project-detail .detail-top button {
+  border-color: #eee9dc;
+  background: #eee9dc;
+  color: #191916;
+}
+.project-detail .detail-top button:hover,
+.project-detail .detail-top button:focus-visible {
+  border-color: #ed191c;
+  background: #ed191c;
+  color: #fffdf1;
+}
+.project-detail .project-copy-label,
+.project-detail .project-facts dt {
+  color: var(--signal-amber);
+  background: #171715;
+}
+.project-detail .project-facts {
+  border-color: #19191635;
+}
+.project-detail .project-facts dd {
+  font: 13px/1.55 'Courier New', monospace;
+}
+.project-detail .project-description {
+  font-size: clamp(16px, 1.35vw, 19px);
+  line-height: 1.65;
+}
+.project-detail .project-criticism {
+  border-color: #ed191c;
+}
+.project-detail .project-criticism h3 {
+  color: #a91a1d;
+}
+.project-detail .project-films figure {
+  border-color: #ffffff35;
+}
+.project-detail .project-films figcaption {
+  color: var(--signal-amber);
+}
+.project-detail .project-films figcaption span {
+  padding: 3px 6px;
+  background: #090908;
+}
+.project-detail a {
+  text-decoration-color: #ed191c;
+}
 @keyframes signal-noise {
   0% {
     transform: translate(0, 0);
@@ -140,12 +218,14 @@
   text-transform: uppercase;
 }
 .work-index button {
-  color: #161616;
+  color: #fffdf1;
   background: transparent;
-  border-color: #161616;
+  border-color: #fffdf1;
 }
 .project-detail button:hover,
-.work-index button:hover {
+.project-detail button:focus-visible,
+.work-index button:hover,
+.work-index button:focus-visible {
   background: #ed191c;
   color: #fff;
 }
@@ -202,7 +282,7 @@
     monospace;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: gold;
+  color: var(--signal-amber);
   background: #050505;
   padding: 4px 8px;
   margin: 0 0 28px;
@@ -226,7 +306,7 @@
   max-width: 100%;
   padding: 3px 5px;
   background: #050505;
-  color: gold;
+  color: var(--signal-amber);
   font: 11px 'Courier New', monospace;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -339,12 +419,14 @@
     10px 'Courier New',
     monospace;
   text-transform: uppercase;
+  color: var(--signal-amber);
 }
 .about-copy {
   max-width: 740px;
   padding: clamp(16px, 3vw, 36px);
-  background: #070707d9;
-  border-left: 2px solid #ed191c;
+  background: #eee9dc;
+  color: #191916;
+  border-left: 3px solid #ed191c;
   font-size: clamp(16px, 2vw, 22px);
   line-height: 1.65;
 }
@@ -444,12 +526,14 @@
   letter-spacing: -0.06em;
   text-transform: none;
   margin: 0;
+  color: #fffdf1;
 }
 .work-index > p {
   font:
     12px 'Courier New',
     monospace;
   margin: 32px 0;
+  color: var(--signal-amber);
 }
 .index-row {
   display: flex;
@@ -457,7 +541,7 @@
   align-items: center;
   gap: 16px;
   padding: 18px 0;
-  border-top: 1px solid #aaa;
+  border-top: 1px solid #ffffff45;
 }
 .index-row a {
   color: inherit;
