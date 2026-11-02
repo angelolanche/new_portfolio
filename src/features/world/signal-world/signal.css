@@ -114,6 +114,9 @@
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
+.project-detail:focus {
+  outline: none;
+}
 .project-detail::backdrop {
   background: #0003;
 }
@@ -161,7 +164,9 @@
   border-color: #19191635;
 }
 .project-detail .project-facts dd {
-  font: 13px/1.55 'Courier New', monospace;
+  font:
+    13px/1.55 'Courier New',
+    monospace;
 }
 .project-detail .project-description {
   font-size: clamp(16px, 1.35vw, 19px);
@@ -178,10 +183,6 @@
 }
 .project-detail .project-films figcaption {
   color: var(--signal-amber);
-}
-.project-detail .project-films figcaption span {
-  padding: 3px 8px;
-  background: #090908;
 }
 .project-detail a {
   text-decoration-color: #ed191c;
@@ -284,7 +285,7 @@
   text-transform: uppercase;
   color: var(--signal-amber);
   background: #050505;
-  padding: 4px 8px;
+  padding: 4px 10px;
   margin: 0 0 28px;
 }
 .project-facts {
@@ -297,24 +298,29 @@
 }
 .project-facts > div {
   display: grid;
-  grid-template-columns: minmax(0, 0.34fr) minmax(0, 1fr);
+  grid-template-columns: minmax(max-content, 0.34fr) minmax(0, 1fr);
   gap: 12px;
 }
 .project-facts dt {
   align-self: start;
   width: fit-content;
   max-width: 100%;
-  padding: 3px 8px;
+  padding: 4px 10px;
   background: #050505;
   color: var(--signal-amber);
-  font: 11px 'Courier New', monospace;
+  font:
+    11px 'Courier New',
+    monospace;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  overflow-wrap: anywhere;
 }
 .project-facts dd {
   min-width: 0;
   margin: 0;
-  font: 13px/1.5 'Courier New', monospace;
+  font:
+    13px/1.5 'Courier New',
+    monospace;
   overflow-wrap: anywhere;
 }
 .project-films {
@@ -357,8 +363,11 @@
   text-transform: uppercase;
 }
 .project-films figcaption > span {
-  padding: 3px 8px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 4px 10px;
   background: #090908;
+  overflow-wrap: anywhere;
 }
 .project-detail a {
   color: inherit;
@@ -560,6 +569,13 @@
   display: block;
   margin-bottom: 8px;
 }
+@media (max-width: 900px) {
+  .project-facts > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+}
+
 @media (max-width: 700px) {
   .about-layout {
     display: block;

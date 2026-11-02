@@ -60,6 +60,33 @@ it('keeps every work and its local media linked to actual files', () => {
   }
 });
 
+it('opens the project dialog without focusing its title or return button', () => {
+  render(<ProjectDetail project={projects[0]} onClose={() => {}} />);
+  const dialog = screen.getByRole('dialog');
+  expect(dialog).toHaveFocus();
+  expect(screen.getByRole('heading', { level: 1 })).not.toHaveFocus();
+  expect(dialog.querySelector('button')).not.toHaveFocus();
+});
+
+it('places every project media caption inside its backed label spans', () => {
+  const { container, rerender } = render(
+    <ProjectDetail project={projects[0]} onClose={() => {}} />,
+  );
+  for (const project of projects) {
+    rerender(<ProjectDetail project={project} onClose={() => {}} />);
+    const captions = container.querySelectorAll('.project-films figcaption');
+    for (const caption of captions) {
+      expect(caption.querySelector('span')).not.toBeNull();
+      expect(
+        [...caption.childNodes].filter(
+          (node) =>
+            node.nodeType === Node.TEXT_NODE && node.textContent?.trim(),
+        ),
+      ).toHaveLength(0);
+    }
+  }
+});
+
 it('surfaces each documented role and tool as scannable project facts', () => {
   const deliveryRoom = projects.find((project) => project.slug === 'bmw')!;
   render(<ProjectDetail project={deliveryRoom} onClose={() => {}} />);
@@ -71,7 +98,9 @@ it('surfaces each documented role and tool as scannable project facts', () => {
   expect(screen.getByText('Tools')).toBeInTheDocument();
   expect(facts).toHaveTextContent(/TouchDesigner.*WebSockets.*Python.*Bash/);
   expect(
-    screen.getByText(/I was responsible for making the project happen as a functioning system/),
+    screen.getByText(
+      /I was responsible for making the project happen as a functioning system/,
+    ),
   ).toBeInTheDocument();
 });
 
@@ -98,7 +127,9 @@ it('shows the Camera Roll poster and only the selected films', () => {
 });
 
 it('shows the added AI filter film in Frog Feelings with its local poster', () => {
-  const frogFeelings = projects.find((project) => project.slug === 'frog-feelings')!;
+  const frogFeelings = projects.find(
+    (project) => project.slug === 'frog-feelings',
+  )!;
   const { container } = render(
     <ProjectDetail project={frogFeelings} onClose={() => {}} />,
   );
@@ -128,7 +159,10 @@ it('shows the added Festa Praga mirror film in AutoRRetrato', () => {
     'src',
     '/media/projects/praga-mirror.mp4',
   );
-  expect(films[2]).toHaveAttribute('poster', '/media/projects/autorretrato.jpg');
+  expect(films[2]).toHaveAttribute(
+    'poster',
+    '/media/projects/autorretrato.jpg',
+  );
   expect(screen.getByText('Festa Praga · mirror study')).toBeInTheDocument();
 });
 

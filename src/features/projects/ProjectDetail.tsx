@@ -25,7 +25,6 @@ export function ProjectDetail({
   onClose: () => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
-  const title = useRef<HTMLHeadingElement>(null);
   const stills = [
     ...('image' in project ? [project.image] : []),
     ...('images' in project ? project.images : []),
@@ -36,7 +35,7 @@ export function ProjectDetail({
   useEffect(() => {
     const previous = document.activeElement;
     dialog.current?.showModal();
-    title.current?.focus({ preventScroll: true });
+    dialog.current?.focus({ preventScroll: true });
     return () => {
       if (previous instanceof HTMLElement) previous.focus();
     };
@@ -45,6 +44,7 @@ export function ProjectDetail({
     <dialog
       ref={dialog}
       className="project-detail"
+      tabIndex={-1}
       aria-labelledby="project-title"
       onCancel={(event) => {
         event.preventDefault();
@@ -56,20 +56,19 @@ export function ProjectDetail({
           Between Frames / Transmission{' '}
           {String(projects.indexOf(project) + 1).padStart(2, '0')}
         </span>
-        <button onClick={onClose}>
-          Back to signal ↗
-        </button>
+        <button onClick={onClose}>Back to signal ↗</button>
       </div>
       <article>
         <p className="signal-eyebrow">{project.category}</p>
-        <h1 ref={title} id="project-title" tabIndex={-1}>
-          {project.title}
-        </h1>
+        <h1 id="project-title">{project.title}</h1>
         <div className="project-editorial">
           <div className="project-copy">
             <p className="project-copy-label">The work</p>
             {facts.length > 0 && (
-              <dl className="project-facts" aria-label="Project credits and tools">
+              <dl
+                className="project-facts"
+                aria-label="Project credits and tools"
+              >
                 {facts.map(({ label, value }) => (
                   <div key={label}>
                     <dt>{label}</dt>
@@ -115,7 +114,7 @@ export function ProjectDetail({
                   />
                 </a>
                 <figcaption>
-                  Critical reading · {project.criticism.author}
+                  <span>Critical reading · {project.criticism.author}</span>
                 </figcaption>
               </figure>
             )}
