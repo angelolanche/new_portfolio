@@ -25,6 +25,7 @@ export function ProjectDetail({
   onClose: () => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
+  const title = useRef<HTMLHeadingElement>(null);
   const stills = [
     ...('image' in project ? [project.image] : []),
     ...('images' in project ? project.images : []),
@@ -35,6 +36,7 @@ export function ProjectDetail({
   useEffect(() => {
     const previous = document.activeElement;
     dialog.current?.showModal();
+    title.current?.focus({ preventScroll: true });
     return () => {
       if (previous instanceof HTMLElement) previous.focus();
     };
@@ -54,13 +56,15 @@ export function ProjectDetail({
           Between Frames / Transmission{' '}
           {String(projects.indexOf(project) + 1).padStart(2, '0')}
         </span>
-        <button autoFocus onClick={onClose}>
+        <button onClick={onClose}>
           Back to signal ↗
         </button>
       </div>
       <article>
         <p className="signal-eyebrow">{project.category}</p>
-        <h1 id="project-title">{project.title}</h1>
+        <h1 ref={title} id="project-title" tabIndex={-1}>
+          {project.title}
+        </h1>
         <div className="project-editorial">
           <div className="project-copy">
             <p className="project-copy-label">The work</p>
@@ -122,7 +126,9 @@ export function ProjectDetail({
                   src={image.src}
                   alt={`${project.title} documentation`}
                 />
-                <figcaption>{image.caption}</figcaption>
+                <figcaption>
+                  <span>{image.caption}</span>
+                </figcaption>
               </figure>
             ))}
             {project.videos.map((video, index) => (

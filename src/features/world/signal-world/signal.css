@@ -180,7 +180,7 @@
   color: var(--signal-amber);
 }
 .project-detail .project-films figcaption span {
-  padding: 3px 6px;
+  padding: 3px 8px;
   background: #090908;
 }
 .project-detail a {
@@ -304,7 +304,7 @@
   align-self: start;
   width: fit-content;
   max-width: 100%;
-  padding: 3px 5px;
+  padding: 3px 8px;
   background: #050505;
   color: var(--signal-amber);
   font: 11px 'Courier New', monospace;
@@ -355,6 +355,10 @@
     10px 'Courier New',
     monospace;
   text-transform: uppercase;
+}
+.project-films figcaption > span {
+  padding: 3px 8px;
+  background: #090908;
 }
 .project-detail a {
   color: inherit;
