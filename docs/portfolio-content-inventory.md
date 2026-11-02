@@ -19,9 +19,9 @@ Implementation source for project titles, copy and media. Keep this file aligned
 - **Title:** Frog Feelings
 - **Context:** Real-time generative AI experiment · personal project
 - **Copy:** stored in `src/content/projects.ts`.
-- **Local media:** `frog-feelings.mp4`, `frog-feelings.jpg`, `frog-feelings-filter-DDX86.jpg`, `frog-feelings-jesus-phone.mp4` (supplied as `jesus phone.mp4` from Downloads on 2026-10-29).
+- **Local media:** `frog-feelings.mp4`, `frog-feelings.jpg`, `frog-feelings-filter-DDX86.jpg`, `frog-feelings-jesus-phone.mp4` (supplied as `jesus phone.mp4` from Downloads on 2026-10-29), `ia-filter.mp4` (supplied from Downloads on 2026-11-01; captioned AI filter study).
 - **External source:** original Wix portfolio.
-- **Additional material pending:** Google Drive folder “IA Filters”. Intended grouping: an AI filter study within Frog Feelings. Proposed technical notes: TouchDesigner, StreamDiffusion, MediaPipe hand tracking, Python prompt pipeline, real-time prompt changes, and software alternatives to dedicated hand-tracking hardware such as Leap Motion. Do not publish this detail until the individual Drive file is identified and reviewed.
+- **Additional material:** the supplied `ia-filter.mp4` is included as an AI filter study. Further technical details remain unverified and are not included in the project copy.
 
 ## Opening of Gallery 138
 
@@ -59,7 +59,7 @@ Implementation source for project titles, copy and media. Keep this file aligned
 - **Title:** AutoRRetrato
 - **Context:** Interactive installation · Festa Praga · 5th edition
 - **Copy:** stored in `src/content/projects.ts`.
-- **Local media in page:** `autorretrato.mp4`, `autorretrato.jpg`, `autorretrato-festa-praga-full-poster.webp` (supplied as `praga.webp` from Downloads), `autorretrato-instagram-variation.jpg`, `autorretrato-instagram-variation.mp4` (supplied as `auto.mp4` from Downloads on 2026-10-29).
+- **Local media in page:** `autorretrato.mp4`, `autorretrato.jpg`, `autorretrato-festa-praga-full-poster.webp` (supplied as `praga.webp` from Downloads), `autorretrato-instagram-variation.jpg`, `autorretrato-instagram-variation.mp4` (supplied as `auto.mp4` from Downloads on 2026-10-29), `praga-mirror.mp4` (supplied from Downloads on 2026-11-01; captioned Festa Praga · mirror study).
 - **Critical reading:** `autorretrato-ezio-critique.webp` is the item 2 image supplied as `ezio.webp` from Downloads. A short English summary of the public reflection by `@ezioluiz.psi` links to `https://www.instagram.com/p/DSdXdqJEpzj/?img_index=2`. Angelo's reply was not independently retrievable, so it is not reproduced.
 - **Confirmed framing:** invited work for the fifth edition of Festa Praga, a laboratory party for invited artists. A wooden frame and camera support an AI-assisted face-tracking system built with Python and TouchDesigner.
 - **External sources:** Festa Praga poster `DK2VD9Uu76o`; Instagram variation `DRDxlE6jSAD`.

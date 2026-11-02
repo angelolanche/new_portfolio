@@ -97,6 +97,41 @@ it('shows the Camera Roll poster and only the selected films', () => {
   );
 });
 
+it('shows the added AI filter film in Frog Feelings with its local poster', () => {
+  const frogFeelings = projects.find((project) => project.slug === 'frog-feelings')!;
+  const { container } = render(
+    <ProjectDetail project={frogFeelings} onClose={() => {}} />,
+  );
+  const films = container.querySelectorAll('video');
+  expect(films).toHaveLength(3);
+  expect(films[2].querySelector('source')).toHaveAttribute(
+    'src',
+    '/media/projects/ia-filter.mp4',
+  );
+  expect(films[2]).toHaveAttribute(
+    'poster',
+    '/media/projects/frog-feelings-filter-DDX86.jpg',
+  );
+  expect(screen.getByText('AI filter study')).toBeInTheDocument();
+});
+
+it('shows the added Festa Praga mirror film in AutoRRetrato', () => {
+  const autorretrato = projects.find(
+    (project) => project.slug === 'autorretrato',
+  )!;
+  const { container } = render(
+    <ProjectDetail project={autorretrato} onClose={() => {}} />,
+  );
+  const films = container.querySelectorAll('video');
+  expect(films).toHaveLength(3);
+  expect(films[2].querySelector('source')).toHaveAttribute(
+    'src',
+    '/media/projects/praga-mirror.mp4',
+  );
+  expect(films[2]).toHaveAttribute('poster', '/media/projects/autorretrato.jpg');
+  expect(screen.getByText('Festa Praga · mirror study')).toBeInTheDocument();
+});
+
 it('presents the verified critical reading on AutoRRetrato with its original post', () => {
   render(<ProjectDetail project={projects[5]} onClose={() => {}} />);
   expect(screen.getByText('Critical reading')).toBeInTheDocument();
@@ -239,5 +274,5 @@ it('keeps editorial copy beside media, avoids duplicate video covers and omits s
   expect(
     screen.getByText('Festa Praga · full event poster'),
   ).toBeInTheDocument();
-  expect(screen.getAllByLabelText(/AutoRRetrato — video/)).toHaveLength(2);
+  expect(screen.getAllByLabelText(/AutoRRetrato — video/)).toHaveLength(3);
 });
