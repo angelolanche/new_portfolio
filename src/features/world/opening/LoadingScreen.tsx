@@ -76,7 +76,9 @@ export function LoadingScreen({ exiting = false }: { exiting?: boolean }) {
           aria-valuemax={100}
           aria-valuenow={progress}
         >
-          <span className="loading-caption">loading...</span>
+          <span className="loading-caption">
+            loading<span className="loading-dots" aria-hidden="true">{[0, 1, 2].map((dot) => <span className="loading-dot" key={dot}>.</span>)}</span>
+          </span>
         </div>
       </div>
     </div>

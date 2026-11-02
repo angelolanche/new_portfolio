@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { DitherControls } from './DitherControls';
 import {
   defaultDitherSettings,
+  mobileDitherSettings,
   ditherColors,
   displayRgb,
   ditherPatterns,
@@ -24,6 +25,10 @@ function Studio() {
 }
 
 describe('dithering studio', () => {
+  it('uses a lighter, coarser dither preset for touch screens', () => {
+    expect(mobileDitherSettings.intensity).toBeLessThan(defaultDitherSettings.intensity);
+    expect(mobileDitherSettings.cellSize).toBeGreaterThan(defaultDitherSettings.cellSize);
+  });
   it('supports all patterns and advanced controls and resets them together', () => {
     render(<Studio />);
     for (const style of Object.keys(ditherPatterns)) {

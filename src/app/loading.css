@@ -144,6 +144,21 @@
     1px 0 #00d9ff;
   animation: loading-chromatic 3.2s steps(1) infinite;
 }
+.loading-dots {
+  display: inline-flex;
+  min-width: 2ch;
+  justify-content: flex-start;
+}
+.loading-dot {
+  animation: loading-dot 0.9s steps(1, end) infinite;
+  opacity: 0;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.3s; }
+.loading-dot:nth-child(3) { animation-delay: 0.6s; }
+@keyframes loading-dot {
+  0%, 32%, 68%, 100% { opacity: 0; }
+  33%, 67% { opacity: 1; }
+}
 @keyframes loading-chromatic {
   0%,
   94%,
@@ -191,6 +206,7 @@
     transition: none;
     animation: none;
   }
+  .loading-dot { animation: none; opacity: 1; }
   .loading-tether,
   .loading-sun,
   .loading-caption {

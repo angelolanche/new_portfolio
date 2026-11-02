@@ -12,7 +12,7 @@ import { RoomSurfaces } from '../surfaces/RoomSurfaces';
 import { CameraMove } from './CameraMove';
 import type { PointerLook } from './cameraLook';
 import { ColorDither } from '../dither/ColorDither';
-import { defaultDitherSettings } from '../dither/ditherSettings';
+import { defaultDitherSettings, mobileDitherSettings } from '../dither/ditherSettings';
 import { TelevisionStatic } from '../signal-world/rendering/TelevisionStatic';
 import type { SignalNavigation } from '../signal-world/navigation/signalNavigation';
 import type { Project } from '../../../content/projects';
@@ -123,7 +123,7 @@ const OpeningCanvas = memo(function OpeningCanvas({
         />
         {colorDither && (
           <ColorDither
-            settings={defaultDitherSettings}
+            settings={touchDevice ? mobileDitherSettings : defaultDitherSettings}
             elapsedRef={elapsedRef}
           />
         )}

@@ -104,13 +104,15 @@ it('replaces the initial HTML loader and exposes live accessible progress', asyn
   });
   expect(document.getElementById('boot-loader')).toBeNull();
   expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0');
+  expect(document.querySelectorAll('.loading-dot')).toHaveLength(3);
+  expect(screen.getByRole('progressbar')).toHaveAccessibleName('Preparing the scene');
   act(() => preload.reportLoading(85));
-  expect(screen.getByText('loading...')).toBeVisible();
+  expect(document.querySelector('.loading-caption')).toBeVisible();
   expect(screen.getByRole('progressbar').parentElement).toHaveStyle({
     '--load': '85%',
   });
   act(() => vi.advanceTimersByTime(5000));
-  expect(screen.getByText('loading...')).toBeVisible();
+  expect(document.querySelector('.loading-caption')).toBeVisible();
   expect(screen.getByRole('progressbar')).toHaveAttribute(
     'aria-valuenow',
     '85',

@@ -60,6 +60,13 @@ export const defaultDitherSettings: DitherSettings = {
   light: '#edc898',
 };
 
+// Slightly reduce high frequency post-processing on touch screens.
+export const mobileDitherSettings: DitherSettings = {
+  ...defaultDitherSettings,
+  intensity: 0.88,
+  cellSize: 3,
+};
+
 export function ditherColors(settings: DitherSettings): [string, string] {
   switch (settings.palette) {
     case 'mono':
