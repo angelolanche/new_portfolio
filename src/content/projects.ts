@@ -108,11 +108,11 @@ Infrastructure support: Motiv Design Lab`,
     category: 'Projection mapping',
     description: `Created for the opening of Gallery 138, this projection mapping project used the façade of the house as its canvas.
 
-Working in collaboration with designer, artist, and art director Alexandre Beraldo (Bera) and Motiv Design, I contributed visual effects, textures, and 3D elements to the projection. The project combined TouchDesigner, Resolume Arena, and After Effects.
+Working in collaboration with designer, artist, and art director Alexandre Beraldo (Bera) and Zizolino, as well as Motiv Design, I contributed visual effects, textures, and 3D elements to the projection. The project combined TouchDesigner, Resolume Arena, and After Effects.
 
 Role: Visual effects · Textures · 3D
 Tools: TouchDesigner · Resolume Arena · After Effects
-Collaborators: Alexandre Beraldo (Bera) · Motiv Design`,
+Collaborators: Alexandre Beraldo (Bera) · Zizolino · Motiv Design`,
     source: 'https://www.angeloaosol.xyz/',
     image: {
       src: '/media/projects/gallery-138-photo.jpg',

@@ -31,7 +31,7 @@ Implementation source for project titles, copy and media. Keep this file aligned
 - **Copy:** stored in `src/content/projects.ts`.
 - **Local media:** `gallery-138.mp4`, `gallery-138.jpg`, `gallery-138-photo.jpg` (supplied as `galeria.JPG`), `gallery-138-pixo.mp4` (browser playback copy converted from the supplied `pixo.mov`).
 - **Page arrangement:** the gallery photograph appears as a separate image; the second film is labeled Pixo and uses the H.264 MP4 copy.
-- **Confirmed credits:** visual effects, textures and 3D by Angelo in collaboration with Alexandre Beraldo (Bera) and Motiv Design.
+- **Confirmed credits:** visual effects, textures and 3D by Angelo in collaboration with designer, artist and art director Alexandre Beraldo (Bera) and Zizolino, alongside Motiv Design.
 
 ## Monolito
 
