@@ -20,11 +20,32 @@ export const colorDitherFragmentShader = `
   uniform vec3 darkColor;
   uniform vec3 lightColor;
   varying vec2 vUv;
+  vec4 toDisplayColor(vec4 color) {
+    #ifdef LINEAR_TONE_MAPPING
+      color.rgb = LinearToneMapping(color.rgb);
+    #elif defined(REINHARD_TONE_MAPPING)
+      color.rgb = ReinhardToneMapping(color.rgb);
+    #elif defined(CINEON_TONE_MAPPING)
+      color.rgb = CineonToneMapping(color.rgb);
+    #elif defined(ACES_FILMIC_TONE_MAPPING)
+      color.rgb = ACESFilmicToneMapping(color.rgb);
+    #elif defined(AGX_TONE_MAPPING)
+      color.rgb = AgXToneMapping(color.rgb);
+    #elif defined(NEUTRAL_TONE_MAPPING)
+      color.rgb = NeutralToneMapping(color.rgb);
+    #elif defined(CUSTOM_TONE_MAPPING)
+      color.rgb = CustomToneMapping(color.rgb);
+    #endif
+    #ifdef SRGB_TRANSFER
+      color = sRGBTransferOETF(color);
+    #endif
+    return color;
+  }
   float bayer2(vec2 p) {
     return 2.0 * p.x + 3.0 * p.y - 4.0 * p.x * p.y;
   }
   void main() {
-    vec4 original = texture2D(tDiffuse, vUv);
+    vec4 original = toDisplayColor(texture2D(tDiffuse, vUv));
     // Exterior media uses opaque rendering with zero alpha as an exclusion mask.
     // Resolve it before quantization, color adjustments or coarse cell sampling.
     if (original.a < 0.5 || intensity <= 0.0) {
@@ -37,7 +58,7 @@ export const colorDitherFragmentShader = `
     vec2 center = resolution / (2.0 * cellSize);
     vec2 pixel = floor(mat2(cos(angle), sin(angle), -sin(angle), cos(angle))
       * (vUv * resolution / cellSize - center) + center);
-    vec3 source = texture2D(tDiffuse, uv).rgb;
+    vec3 source = toDisplayColor(texture2D(tDiffuse, uv)).rgb;
     float threshold = (4.0 * bayer2(mod(pixel, 2.0))
       + bayer2(mod(floor(pixel / 2.0), 2.0)) + 0.5) / 16.0;
     if (pattern == 1) threshold = fract(sin(dot(pixel, vec2(12.9898, 78.233))) * 43758.5453);
