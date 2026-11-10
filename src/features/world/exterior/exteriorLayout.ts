@@ -1,8 +1,8 @@
 // A single curved photographic backdrop in world coordinates, beyond the veranda.
 // Its arc covers both openings throughout the room path; no image is attached to glass.
 export const exteriorBackdrop = {
-  position: [0, 1.5, 0] as [number, number, number],
-  radius: 90,
+  position: [-240, 1.5, -200] as [number, number, number],
+  radius: 120,
   start: 2.5,
   arc: 3.4,
   height: (90 * 3.4 * 9) / 16,
