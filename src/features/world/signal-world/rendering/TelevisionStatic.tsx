@@ -29,6 +29,7 @@ import {
   type SignalNavigation,
 } from '../navigation/signalNavigation';
 import { openingDuration } from '../../opening/cameraPath';
+import { createSceneShaderWarmup } from '../../opening/sceneShaderWarmup';
 import { sampleLookRange } from '../../opening/cameraLook';
 import { televisionSnowShader } from './televisionSnow';
 import {
@@ -56,6 +57,7 @@ export function TelevisionStatic({
   openingReadyRef?: RefObject<boolean>;
 }) {
   const [sampleRenderBounds] = useState(createTelevisionRenderBounds);
+  const [warmShaders] = useState(createSceneShaderWarmup);
   const [touchDevice] = useState(() =>
     Boolean(
       window.matchMedia?.('(pointer: coarse) and (max-width: 900px)').matches,
@@ -307,6 +309,12 @@ export function TelevisionStatic({
       // Keep the CRT's original color pipeline after entry too. Direct canvas
       // rendering applies a different output transform to lit materials.
       gl.setRenderTarget(target);
+      // Compile every material, including films/forms outside the initial view.
+      // Keep the offscreen output transform used by both the CRT and room passes.
+      warmShaders(gl, [
+        [world, worldCamera],
+        [scene, camera],
+      ]);
       gl.render(world, worldCamera);
       gl.setRenderTarget(previousTarget);
       if (entered) {

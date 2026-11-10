@@ -12,7 +12,10 @@ import { RoomSurfaces } from '../surfaces/RoomSurfaces';
 import { CameraMove } from './CameraMove';
 import type { PointerLook } from './cameraLook';
 import { ColorDither } from '../dither/ColorDither';
-import { defaultDitherSettings, mobileDitherSettings } from '../dither/ditherSettings';
+import {
+  defaultDitherSettings,
+  mobileDitherSettings,
+} from '../dither/ditherSettings';
 import { TelevisionStatic } from '../signal-world/rendering/TelevisionStatic';
 import type { SignalNavigation } from '../signal-world/navigation/signalNavigation';
 import type { Project } from '../../../content/projects';
@@ -89,7 +92,7 @@ const OpeningCanvas = memo(function OpeningCanvas({
     <>
       {!ready && <LoadingScreen exiting={revealing} />}
       <Canvas
-        shadows
+        shadows="percentage"
         gl={{ transmissionResolutionScale: 0.75 }}
         dpr={touchDevice ? 1 : [1, 1.5]}
         camera={{ fov: 42, near: 0.03, far: 400 }}
@@ -123,7 +126,9 @@ const OpeningCanvas = memo(function OpeningCanvas({
         />
         {colorDither && (
           <ColorDither
-            settings={touchDevice ? mobileDitherSettings : defaultDitherSettings}
+            settings={
+              touchDevice ? mobileDitherSettings : defaultDitherSettings
+            }
             elapsedRef={elapsedRef}
           />
         )}

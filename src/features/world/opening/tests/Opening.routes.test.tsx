@@ -142,7 +142,7 @@ describe('Opening routes', () => {
       'src',
       '/media/about-angelo.mp4',
     );
-    expect(about.querySelectorAll('.about-threads path')).toHaveLength(35);
+    expect(about.querySelectorAll('.about-threads path')).toHaveLength(18);
     expect(about.querySelector('.about-threads')).toHaveAttribute(
       'viewBox',
       '0 0 1440 2400',

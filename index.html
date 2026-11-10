@@ -101,17 +101,6 @@
         </div>
       </div>
     </div>
-    <script>
-      Promise.all(
-        Array.from(document.querySelectorAll('#boot-loader img'), (image) =>
-          image.decode(),
-        ),
-      )
-        .then(() => {
-          document.getElementById('boot-loader')?.classList.add('is-art-ready');
-        })
-        .catch(() => {});
-    </script>
     <noscript
       ><style>
         #boot-loader {
@@ -120,6 +109,6 @@
       >This portfolio requires JavaScript for its interactive scene.</noscript
     >
     <div id="root"></div>
-    <script type="module" src="/src/app/main.tsx"></script>
+    <script type="module" src="/src/app/bootstrap.ts"></script>
   </body>
 </html>
