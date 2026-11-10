@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import type { Plugin, ResolvedConfig } from 'vite';
+import { bakedJacketPlugin } from './scripts/bakedJacketPlugin.ts';
 import { projects } from './src/content/projects.ts';
 import {
   aboutMetadata,
@@ -48,7 +49,7 @@ function projectSeoPages(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), projectSeoPages()],
+  plugins: [react(), bakedJacketPlugin(), projectSeoPages()],
   test: {
     // Geometry and simulation tests need no DOM. UI tests opt into jsdom.
     environment: 'node',

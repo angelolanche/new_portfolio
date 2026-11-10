@@ -102,6 +102,7 @@ it('preserves the handoff, eases into each destination and restores free flight 
   const render = vi.fn();
   const gl = {
     autoClear: true,
+    initTexture: vi.fn(),
     compileAsync: vi.fn(() => Promise.resolve(new Scene())),
     getDrawingBufferSize: (value: Vector2) => value.set(1600, 900),
     getRenderTarget: () => null,
@@ -316,6 +317,7 @@ it('pushes the mobile signal camera closer to a work and widens its final lens',
     camera.lookAt(pose.target);
     const gl = {
       autoClear: true,
+      initTexture: vi.fn(),
       compileAsync: vi.fn(() => Promise.resolve(new Scene())),
       getDrawingBufferSize: (value: Vector2) => value.set(390, 844),
       getRenderTarget: () => null,

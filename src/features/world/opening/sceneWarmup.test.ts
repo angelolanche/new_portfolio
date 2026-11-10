@@ -1,10 +1,10 @@
 import { expect, it, vi } from 'vitest';
 import { PerspectiveCamera, Scene } from 'three';
-import { createSceneShaderWarmup } from './sceneShaderWarmup';
+import { createSceneWarmup } from './sceneWarmup';
 import { areSceneAssetsReady, trackSceneAsset } from './scenePreload';
 
 it('waits for assets, compiles both scenes once and holds loading until all programs finish', async () => {
-  const warm = createSceneShaderWarmup();
+  const warm = createSceneWarmup();
   const scene = new Scene();
   const world = new Scene();
   const camera = new PerspectiveCamera();
@@ -17,19 +17,19 @@ it('waits for assets, compiles both scenes once and holds loading until all prog
     [world, camera],
   ] as const;
   const assetDone = trackSceneAsset();
-  warm({ compileAsync }, scenes);
+  warm({ compileAsync, initTexture: vi.fn() }, scenes);
   expect(compileAsync).not.toHaveBeenCalled();
   assetDone();
-  warm({ compileAsync }, scenes);
+  warm({ compileAsync, initTexture: vi.fn() }, scenes);
   expect(compileAsync.mock.calls).toHaveLength(2);
   expect(areSceneAssetsReady()).toBe(false);
-  warm({ compileAsync }, scenes);
+  warm({ compileAsync, initTexture: vi.fn() }, scenes);
   expect(compileAsync.mock.calls).toHaveLength(2);
   finish[0]();
   await vi.waitFor(() => expect(areSceneAssetsReady()).toBe(false));
   finish[1]();
   await vi.waitFor(() => expect(areSceneAssetsReady()).toBe(true));
-  warm({ compileAsync }, scenes);
+  warm({ compileAsync, initTexture: vi.fn() }, scenes);
   expect(compileAsync.mock.calls).toHaveLength(2);
 });
 
@@ -43,7 +43,7 @@ it.each(['reject', 'throw'])(
         if (failure === 'throw') throw error;
         return Promise.reject(error);
       });
-      createSceneShaderWarmup()({ compileAsync }, [
+      createSceneWarmup()({ compileAsync, initTexture: vi.fn() }, [
         [new Scene(), new PerspectiveCamera()],
       ]);
       await vi.waitFor(() => expect(areSceneAssetsReady()).toBe(true));
@@ -78,7 +78,7 @@ it.each(['reject', 'throw'])(
         );
       const scene = new Scene();
       const camera = new PerspectiveCamera();
-      createSceneShaderWarmup()({ compileAsync }, [
+      createSceneWarmup()({ compileAsync, initTexture: vi.fn() }, [
         [scene, camera],
         [scene, camera],
       ]);

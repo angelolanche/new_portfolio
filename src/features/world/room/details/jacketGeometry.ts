@@ -7,7 +7,7 @@ import {
   Vector3,
   DoubleSide,
 } from 'three';
-import { createFinishedBox } from '../../surfaces/finishedGeometry';
+import { createFinishedBox } from '../../surfaces/finishedGeometry.ts';
 
 // Match the approved upholstered back, including its arch and tapered shoulders.
 export function createJacketSupport() {
